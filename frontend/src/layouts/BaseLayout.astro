@@ -13,6 +13,7 @@ interface Props {
 }
 
 const { title, description } = Astro.props;
+const currentPath = Astro.url.pathname;
 ---
 
 <html lang="en">
@@ -30,12 +31,23 @@ const { title, description } = Astro.props;
 		<title>{title}</title>
 	</head>
 	<body>
-		<a class="skip-link visually-hidden" href="#main-content">Skip to main content</a>
-		<Header />
-		<main id="main-content" class="site-main" tabindex="-1">
+		<a
+			class="skip-link visually-hidden"
+			href="#main-content"
+			data-mobile-menu-inert
+		>
+			Skip to main content
+		</a>
+		<Header currentPath={currentPath} />
+		<main
+			id="main-content"
+			class="site-main"
+			tabindex="-1"
+			data-mobile-menu-inert
+		>
 			<slot />
 		</main>
-		<Footer />
+		<Footer currentPath={currentPath} />
 	</body>
 </html>
 

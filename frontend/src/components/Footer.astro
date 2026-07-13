@@ -1,6 +1,56 @@
-<footer class="site-footer">
-	<div class="site-footer__inner container">
-		<p>Copyright 2019. All Rights Reserved</p>
+---
+import { footerNavigation, isCurrentPath } from '../data/navigation';
+import { copyrightText, inviteCta, socialPlatforms } from '../data/site';
+import ButtonLink from './ButtonLink.astro';
+import Logo from './Logo.astro';
+import SocialLinks from './SocialLinks.astro';
+
+interface Props {
+	currentPath: string;
+}
+
+const { currentPath } = Astro.props;
+---
+
+<footer class="site-footer" data-mobile-menu-inert>
+	<div class="site-footer__inner">
+		<a class="site-footer__brand" href="/" aria-label="Photosnap home">
+			<Logo gradientId="footer-logo-gradient" />
+		</a>
+
+		<div class="site-footer__social">
+			<SocialLinks items={socialPlatforms} />
+		</div>
+
+		<nav class="site-footer__navigation" aria-label="Footer">
+			<ul>
+				{
+					footerNavigation.map((item) => (
+						<li>
+							<a
+								href={item.href}
+								aria-current={
+									isCurrentPath(currentPath, item.href) ? 'page' : undefined
+								}
+							>
+								{item.label}
+							</a>
+						</li>
+					))
+				}
+			</ul>
+		</nav>
+
+		<div class="site-footer__invite">
+			<ButtonLink
+				href={inviteCta.href}
+				label={inviteCta.label}
+				variant="arrow"
+				color="white"
+			/>
+		</div>
+
+		<p class="site-footer__copyright">{copyrightText}</p>
 	</div>
 </footer>
 
@@ -10,18 +60,62 @@
 		align-items: center;
 		min-block-size: 33.6875rem;
 		background: var(--color-surface-inverse);
-		color: var(--color-text-inverse-subtle);
+		color: var(--color-text-inverse);
 	}
 
 	.site-footer__inner {
 		display: flex;
-		justify-content: center;
-		text-align: center;
+		flex-direction: column;
+		align-items: center;
+		inline-size: min(calc(100% - (2 * var(--space-300))), 19.375rem);
+		min-block-size: 26.875rem;
+		margin-inline: auto;
 	}
 
-	.site-footer p {
+	.site-footer__brand {
+		display: inline-flex;
+		align-items: center;
+		min-block-size: 1rem;
+		color: var(--color-text-inverse);
+	}
+
+	.site-footer__social {
+		margin-block-start: var(--space-400);
+	}
+
+	.site-footer__navigation {
+		inline-size: 100%;
+		margin-block-start: var(--space-600);
+	}
+
+	.site-footer__navigation ul {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: var(--space-250);
+		list-style: none;
+	}
+
+	.site-footer__navigation a {
+		display: block;
+		font-size: var(--text-preset-7-size);
+		font-weight: var(--font-weight-bold);
+		line-height: var(--text-preset-7-line-height);
+		letter-spacing: var(--text-preset-7-letter-spacing);
+		text-align: center;
+		text-decoration: none;
+	}
+
+	.site-footer__invite {
+		margin-block-start: auto;
+	}
+
+	.site-footer__copyright {
+		margin-block-start: var(--space-400);
+		color: var(--color-text-inverse-subtle);
 		font-size: var(--text-preset-5-size);
 		line-height: var(--text-preset-5-line-height);
+		text-align: center;
 	}
 
 	@media (min-width: 48rem) {
@@ -30,7 +124,59 @@
 		}
 
 		.site-footer__inner {
-			justify-content: flex-end;
+			display: grid;
+			grid-template-columns: 1fr 15.9375rem;
+			grid-template-rows: auto auto 1fr;
+			inline-size: min(
+				calc(100% - (2 * var(--layout-page-gutter))),
+				var(--layout-content-max)
+			);
+			min-block-size: 10.0625rem;
+		}
+
+		.site-footer__brand {
+			grid-column: 1;
+			grid-row: 1;
+			justify-self: start;
+		}
+
+		.site-footer__navigation {
+			grid-column: 1;
+			grid-row: 2;
+			inline-size: auto;
+			margin-block-start: var(--space-400);
+		}
+
+		.site-footer__navigation ul {
+			flex-direction: row;
+			gap: var(--space-300);
+		}
+
+		.site-footer__navigation a {
+			text-align: start;
+		}
+
+		.site-footer__social {
+			grid-column: 1;
+			grid-row: 3;
+			align-self: end;
+			justify-self: start;
+			margin-block-start: 0;
+		}
+
+		.site-footer__invite {
+			grid-column: 2;
+			grid-row: 1;
+			justify-self: end;
+			margin-block-start: 0;
+		}
+
+		.site-footer__copyright {
+			grid-column: 2;
+			grid-row: 3;
+			align-self: end;
+			justify-self: end;
+			margin-block-start: 0;
 			text-align: end;
 		}
 	}
@@ -38,6 +184,36 @@
 	@media (min-width: 75rem) {
 		.site-footer {
 			min-block-size: 15.625rem;
+		}
+
+		.site-footer__inner {
+			grid-template-columns: 10.565875rem 6.878375rem 15.9375rem 1fr 15.9375rem;
+			grid-template-rows: auto 1fr auto;
+			min-block-size: 7.9375rem;
+		}
+
+		.site-footer__navigation {
+			grid-column: 3;
+			grid-row: 1 / -1;
+			margin-block-start: 0;
+		}
+
+		.site-footer__navigation ul {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: var(--space-250);
+		}
+
+		.site-footer__invite,
+		.site-footer__copyright {
+			grid-column: 5;
+		}
+	}
+
+	@media (hover: hover) {
+		.site-footer__navigation a:hover {
+			text-decoration: underline;
+			text-underline-offset: 0.25em;
 		}
 	}
 </style>

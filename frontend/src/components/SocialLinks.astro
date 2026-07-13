@@ -1,0 +1,48 @@
+---
+import type { SocialPlatform } from '../data/types';
+
+interface Props {
+	items: readonly SocialPlatform[];
+}
+
+const { items } = Astro.props;
+---
+
+<div class="social-marks" aria-hidden="true">
+	{
+		items.map((item) => (
+			<span class="social-marks__item">
+				<img
+					src={item.icon}
+					alt=""
+					width={item.width}
+					height={item.height}
+					loading="lazy"
+					decoding="async"
+				/>
+			</span>
+		))
+	}
+</div>
+
+<style>
+	.social-marks {
+		display: flex;
+		align-items: center;
+		gap: var(--space-150);
+	}
+
+	.social-marks__item {
+		display: grid;
+		place-items: center;
+		inline-size: 1.25rem;
+		block-size: 1.25rem;
+	}
+
+	.social-marks img {
+		display: block;
+		max-inline-size: 1.25rem;
+		max-block-size: 1.25rem;
+		filter: brightness(0) invert(1);
+	}
+</style>
