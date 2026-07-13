@@ -1,4 +1,8 @@
 ---
+import BetaInvite from '../components/BetaInvite.astro';
+import FeatureGrid from '../components/FeatureGrid.astro';
+import SplitSection from '../components/SplitSection.astro';
+import { features, featuresHero } from '../data/features';
 import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 
@@ -6,5 +10,45 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 	title="Features | Photosnap"
 	description="Explore the tools Photosnap provides for creating and sharing photo stories."
 >
-	<h1 class="visually-hidden">Features</h1>
+	<SplitSection
+		heading={featuresHero.heading}
+		body={featuresHero.body}
+		image={featuresHero.image}
+		theme="dark"
+		imagePosition="right"
+		variant="page-hero"
+		headingLevel="h1"
+		accent
+		isLcp
+	/>
+	<section class="features-list" aria-labelledby="features-list-title">
+		<h2 id="features-list-title" class="visually-hidden">
+			PhotoSnap features
+		</h2>
+		<FeatureGrid features={features} />
+	</section>
+	<BetaInvite />
 </BaseLayout>
+
+<style>
+	.features-list {
+		display: grid;
+		place-items: center;
+		min-block-size: 114.375rem;
+		padding-block: 4.75rem;
+	}
+
+	@media (min-width: 48rem) {
+		.features-list {
+			min-block-size: 67.8125rem;
+			padding-block: 6.75rem;
+		}
+	}
+
+	@media (min-width: 75rem) {
+		.features-list {
+			min-block-size: 56rem;
+			padding-block: 10rem;
+		}
+	}
+</style>
