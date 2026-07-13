@@ -1,0 +1,207 @@
+---
+import type { FeaturedStory } from '../data/types';
+import ButtonLink from './ButtonLink.astro';
+
+interface Props {
+	story: FeaturedStory;
+}
+
+const { story } = Astro.props;
+---
+
+<section class="featured-story">
+	<picture class="featured-story__media">
+		<source
+			media="(min-width: 75rem)"
+			srcset={story.image.desktop.src}
+			width={story.image.desktop.width}
+			height={story.image.desktop.height}
+		/>
+		<source
+			media="(min-width: 48rem)"
+			srcset={story.image.tablet.src}
+			width={story.image.tablet.width}
+			height={story.image.tablet.height}
+		/>
+		<img
+			src={story.image.mobile.src}
+			alt={story.image.alt}
+			width={story.image.mobile.width}
+			height={story.image.mobile.height}
+			loading="eager"
+			fetchpriority="high"
+		/>
+	</picture>
+
+	<div class="featured-story__panel">
+		<div class="featured-story__content">
+			<div class="featured-story__heading-group">
+				<p class="featured-story__label">{story.label}</p>
+				<h1 class="featured-story__title">{story.title}</h1>
+			</div>
+
+			<div class="featured-story__details">
+				<div class="featured-story__metadata">
+					<p class="featured-story__date">{story.date}</p>
+					<p>by {story.author}</p>
+				</div>
+				<p class="featured-story__body">{story.body}</p>
+				{
+					story.href && (
+						<ButtonLink
+							href={story.href}
+							label={story.ctaLabel}
+							ariaLabel={`${story.ctaLabel}: ${story.title}`}
+							variant="arrow"
+							color="white"
+						/>
+					)
+				}
+			</div>
+		</div>
+	</div>
+</section>
+
+<style>
+	.featured-story {
+		position: relative;
+		inline-size: 100%;
+		background: var(--color-surface-inverse);
+		color: var(--color-text-inverse);
+	}
+
+	.featured-story__media {
+		display: block;
+		inline-size: 100%;
+		block-size: 19.8125rem;
+		overflow: hidden;
+		background: var(--color-surface-muted);
+	}
+
+	.featured-story__media img {
+		inline-size: 100%;
+		block-size: 100%;
+		object-fit: cover;
+		object-position: center;
+	}
+
+	.featured-story__panel {
+		position: relative;
+		min-block-size: 30.9375rem;
+		background: var(--color-surface-inverse);
+	}
+
+	.featured-story__panel::before {
+		position: absolute;
+		inset-block-start: 0;
+		inset-inline-start: max(
+			var(--layout-page-gutter),
+			calc((100% - 19.875rem) / 2)
+		);
+		inline-size: 8rem;
+		block-size: 0.375rem;
+		background: var(--gradient-brand);
+		content: '';
+	}
+
+	.featured-story__content {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-700);
+		inline-size: min(calc(100% - (2 * var(--space-300))), 19.875rem);
+		margin-inline: auto;
+		padding-block-start: var(--space-600);
+	}
+
+	.featured-story__heading-group,
+	.featured-story__details {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.featured-story__heading-group {
+		gap: var(--space-200);
+	}
+
+	.featured-story__details {
+		align-items: flex-start;
+		gap: var(--space-300);
+	}
+
+	.featured-story__label {
+		font-size: var(--text-preset-7-size);
+		font-weight: var(--font-weight-bold);
+		line-height: var(--text-preset-7-line-height);
+		letter-spacing: var(--text-preset-7-letter-spacing);
+	}
+
+	.featured-story__title {
+		font-size: var(--text-preset-2-size);
+		font-weight: var(--font-weight-bold);
+		line-height: var(--text-preset-2-line-height);
+		letter-spacing: var(--text-preset-2-letter-spacing);
+		text-transform: uppercase;
+	}
+
+	.featured-story__metadata {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--space-100);
+		font-size: var(--text-preset-6-size);
+		line-height: var(--text-preset-6-line-height);
+	}
+
+	.featured-story__date {
+		opacity: 0.75;
+	}
+
+	.featured-story__body {
+		font-size: var(--text-preset-5-size);
+		line-height: var(--text-preset-5-line-height);
+		opacity: 0.6;
+	}
+
+	@media (min-width: 48rem) {
+		.featured-story {
+			min-block-size: 40.625rem;
+		}
+
+		.featured-story__media {
+			position: absolute;
+			inset: 0;
+			block-size: 100%;
+		}
+
+		.featured-story__panel {
+			min-block-size: 40.625rem;
+			background: transparent;
+		}
+
+		.featured-story__panel::before {
+			display: none;
+		}
+
+		.featured-story__content {
+			gap: var(--space-800);
+			inline-size: 24.1875rem;
+			margin-inline: var(--space-500) 0;
+			padding-block-start: 6.125rem;
+		}
+
+		.featured-story__heading-group {
+			gap: var(--space-300);
+		}
+
+		.featured-story__title {
+			font-size: var(--text-preset-1-size);
+			line-height: var(--text-preset-1-line-height);
+			letter-spacing: var(--text-preset-1-letter-spacing);
+		}
+	}
+
+	@media (min-width: 75rem) {
+		.featured-story__content {
+			margin-inline-start: var(--space-1400);
+		}
+	}
+</style>

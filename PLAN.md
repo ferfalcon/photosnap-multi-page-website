@@ -462,7 +462,7 @@ Required accessibility work:
 
 - Header CTA and beta CTA use the shared CTA label.
 - Header and footer invite CTAs use `/pricing` as the documented interim review-site destination.
-- Story cards expose a clear `Read story` action.
+- Story previews remain static and omit read actions until title-specific destinations are approved.
 - Pricing `PICK PLAN` controls are visually required, but final behavior is an open question.
 
 ### 12.3 Pricing toggle
@@ -515,7 +515,7 @@ Manual visual checks:
 
 Manual accessibility checks:
 
-- Keyboard navigation through header, menu, page links, story cards, pricing controls, and footer.
+- Keyboard navigation through header, menu, page links, pricing controls, and footer; static story previews create no focus stops.
 - Visible focus states everywhere.
 - Mobile menu open/close with keyboard and Escape.
 - Screen reader-friendly names for icon-only or visual controls.
@@ -686,13 +686,16 @@ Mitigation:
 - Render semantic story and feature preview lists with sequential headings.
 - Keep Home story cards static and omit the Figma divider and `READ STORY` action until title-specific destinations are approved; this is an intentional Figma deviation.
 
-**Next implementation step:** Step 9 — Implement Stories.
-
 ### Step 9 — Implement Stories
 
-- Add featured story hero.
-- Add data-driven story grid.
-- Tune card crops and responsive grid behavior.
+**Status:** Completed — 2026-07-13
+
+- Add the responsive, art-directed featured story hero with its visible page heading and LCP image priority.
+- Add a reusable, semantic story grid and render all 16 dated stories in the defined order.
+- Tune and validate the gutterless four-column, two-column, and single-column layouts and supplied crops.
+- Keep the featured story and story cards static, omitting the Figma/SPEC read actions and card dividers until title-specific destinations are approved; this is an intentional review-site deviation.
+
+**Next implementation step:** Step 10 — Implement Features.
 
 ### Step 10 — Implement Features
 
@@ -718,10 +721,6 @@ Mitigation:
 - Compare against Figma frames and update notes if any intentional deviations exist.
 
 ## 16. Assumptions
-
-- The Astro app remains in `frontend/`.
-- Documentation remains at the repo root.
-- `pnpm` is the package manager for the Astro app.
 - Starter content and assets in `docs/starter-content/` are approved reference material unless they conflict with Figma or client direction.
 - The initial review site uses the supplied progressive JPEG, SVG, and PNG assets; modern-format derivatives are deferred until a measured performance pass.
 - Monthly pricing is the first visual state to implement.
@@ -735,12 +734,11 @@ Mitigation:
 ## 17. Open questions
 
 - Should known copy typos be preserved for design fidelity or corrected before client review?
-- Should story cards navigate to future story-detail pages, or are they visual previews only for this phase?
 - What should `PICK PLAN` do in the review site?
 - Should the pricing yearly toggle be interactive in the Astro review site, or should yearly data remain non-interactive until approved?
 
 ## 18. Ready status
 
-Steps 1 through 8 are complete. The verified public asset namespace and responsive mapping are documented in `docs/asset-map.md`. The Astro app now has its global CSS foundation, reusable document shell, shared navigation data, four routes, responsive navigation components, reusable shared content components, typed Stories, Features, and Pricing content, and the complete responsive Home page.
+Steps 1 through 9 are complete. The verified public asset namespace and responsive mapping are documented in `docs/asset-map.md`. The Astro app now has its global CSS foundation, reusable document shell, shared navigation data, four routes, responsive navigation components, reusable shared content components, typed Stories, Features, and Pricing content, and complete responsive Home and Stories pages.
 
-The next safe step is Step 9: implement the Stories page using the shared story data and card components.
+The next safe step is Step 10: implement the Features page using the shared hero, feature-card, and beta-invite components.
