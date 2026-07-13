@@ -1,0 +1,46 @@
+@layer base {
+	:where(html) {
+		min-inline-size: 20rem;
+		background: var(--color-surface);
+		color-scheme: light;
+		font-family: var(--font-family-sans);
+		font-size-adjust: from-font;
+		text-size-adjust: 100%;
+	}
+
+	:where(body) {
+		min-block-size: 100vh;
+		min-block-size: 100svh;
+		background: var(--color-surface);
+		color: var(--color-text);
+		font-size: var(--text-preset-5-size);
+		font-weight: var(--font-weight-regular);
+		line-height: var(--text-preset-5-line-height);
+		overflow-wrap: break-word;
+	}
+
+	:where(h1, h2, h3) {
+		text-wrap: balance;
+	}
+
+	:where(p) {
+		text-wrap: pretty;
+	}
+
+	:where(a) {
+		color: inherit;
+	}
+
+	:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+		outline: 0.1875rem solid var(--color-focus-outer);
+		outline-offset: 0.1875rem;
+		box-shadow: 0 0 0 0.125rem var(--color-focus-inner);
+	}
+
+	@media (forced-colors: active) {
+		:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+			outline-color: Highlight;
+			box-shadow: none;
+		}
+	}
+}

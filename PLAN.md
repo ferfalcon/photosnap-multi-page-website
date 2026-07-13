@@ -628,9 +628,13 @@ Mitigation:
 
 ### Step 3 — Add global CSS foundation
 
+**Status:** Completed — 2026-07-13
+
 - Add reset, tokens, base styles, and minimal utilities.
 - Add font setup for DM Sans or approved fallback strategy.
 - Define typography, color, spacing, gradient, and layout tokens.
+
+**Next implementation step:** Step 4 — Build the layout shell.
 
 ### Step 4 — Build the layout shell
 
