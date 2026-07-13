@@ -1,10 +1,219 @@
 ---
+import FeatureCard from '../components/FeatureCard.astro';
+import SplitSection from '../components/SplitSection.astro';
+import StoryCard from '../components/StoryCard.astro';
+import { homeFeaturePreviews } from '../data/features';
+import { inviteCta } from '../data/site';
+import { homeStoryPreviews } from '../data/stories';
+import type { ArtDirectedImage, LinkItem } from '../data/types';
 import BaseLayout from '../layouts/BaseLayout.astro';
+
+const viewStoriesCta = {
+	label: 'VIEW THE STORIES',
+	href: '/stories',
+} as const satisfies LinkItem;
+
+const homeHeroImage = {
+	alt: 'Photographer standing on a dock overlooking a lake.',
+	mobile: {
+		src: '/assets/images/home/create-and-share-mobile.jpg',
+		width: 375,
+		height: 294,
+	},
+	tablet: {
+		src: '/assets/images/home/create-and-share-tablet.jpg',
+		width: 273,
+		height: 650,
+	},
+	desktop: {
+		src: '/assets/images/home/create-and-share-desktop.jpg',
+		width: 830,
+		height: 650,
+	},
+} as const satisfies ArtDirectedImage;
+
+const beautifulStoriesImage = {
+	alt: 'Laptop displaying a photo-editing workspace on a desk.',
+	mobile: {
+		src: '/assets/images/home/beautiful-stories-mobile.jpg',
+		width: 375,
+		height: 271,
+	},
+	tablet: {
+		src: '/assets/images/home/beautiful-stories-tablet.jpg',
+		width: 273,
+		height: 600,
+	},
+	desktop: {
+		src: '/assets/images/home/beautiful-stories-desktop.jpg',
+		width: 830,
+		height: 600,
+	},
+} as const satisfies ArtDirectedImage;
+
+const designedForEveryoneImage = {
+	alt: 'Videographer holding a professional camera rig.',
+	mobile: {
+		src: '/assets/images/home/designed-for-everyone-mobile.jpg',
+		width: 375,
+		height: 271,
+	},
+	tablet: {
+		src: '/assets/images/home/designed-for-everyone-tablet.jpg',
+		width: 273,
+		height: 600,
+	},
+	desktop: {
+		src: '/assets/images/home/designed-for-everyone-desktop.jpg',
+		width: 830,
+		height: 600,
+	},
+} as const satisfies ArtDirectedImage;
 ---
 
 <BaseLayout
 	title="Photosnap"
 	description="Photosnap is a platform for photographers and visual storytellers to share photos, tell stories, and connect with others."
 >
-	<h1 class="visually-hidden">Photosnap</h1>
+	<SplitSection
+		heading="Create and share your photo stories."
+		body="Photosnap is a platform for photographers and visual storytellers. We make it easy to share photos, tell stories and connect with others."
+		image={homeHeroImage}
+		theme="dark"
+		imagePosition="right"
+		variant="home-hero"
+		headingLevel="h1"
+		accent
+		cta={inviteCta}
+		isLcp
+	/>
+	<SplitSection
+		heading="Beautiful stories every time"
+		body="We provide design templates to ensure your stories look terrific. Easily add photos, text, embed maps and media from other networks. Then share your story with everyone."
+		image={beautifulStoriesImage}
+		theme="light"
+		imagePosition="left"
+		variant="home-secondary"
+		cta={viewStoriesCta}
+	/>
+	<SplitSection
+		heading="Designed for everyone"
+		body="Photosnap can help you create stories that resonate with your audience. Our tool is designed for photographers of all levels, brands, businesses you name it."
+		image={designedForEveryoneImage}
+		theme="light"
+		imagePosition="right"
+		variant="home-secondary"
+		cta={viewStoriesCta}
+	/>
+
+	<section class="home-stories" aria-labelledby="home-stories-title">
+		<h2 id="home-stories-title" class="visually-hidden">
+			Featured stories
+		</h2>
+		<ul class="home-story-grid">
+			{
+				homeStoryPreviews.map((story) => (
+					<li>
+						<StoryCard
+							title={story.title}
+							author={story.author}
+							image={story.image}
+							showDate={false}
+							headingLevel="h3"
+						/>
+					</li>
+				))
+			}
+		</ul>
+	</section>
+
+	<section class="home-features" aria-labelledby="home-features-title">
+		<h2 id="home-features-title" class="visually-hidden">
+			PhotoSnap features
+		</h2>
+		<ul class="home-feature-grid">
+			{
+				homeFeaturePreviews.map((feature) => (
+					<li>
+						<FeatureCard
+							title={feature.title}
+							description={feature.description}
+							icon={feature.icon}
+							headingLevel="h3"
+							layout="home-preview"
+						/>
+					</li>
+				))
+			}
+		</ul>
+	</section>
 </BaseLayout>
+
+<style>
+	.home-story-grid,
+	.home-feature-grid {
+		padding: 0;
+		list-style: none;
+	}
+
+	.home-story-grid {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.home-story-grid > li,
+	.home-feature-grid > li {
+		min-inline-size: 0;
+	}
+
+	.home-features {
+		display: grid;
+		place-items: center;
+		min-block-size: 60.125rem;
+		padding: var(--space-1000) var(--space-400);
+	}
+
+	.home-feature-grid {
+		display: grid;
+		gap: var(--space-700);
+		inline-size: min(100%, 19.375rem);
+	}
+
+	@media (min-width: 48rem) {
+		.home-story-grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+
+		.home-features {
+			min-block-size: 63.4375rem;
+			padding: 7.5rem var(--space-500);
+		}
+
+		.home-feature-grid {
+			gap: var(--space-1000);
+			inline-size: min(100%, 28.5625rem);
+		}
+	}
+
+	@media (min-width: 75rem) {
+		.home-story-grid {
+			grid-template-columns: repeat(4, minmax(0, 1fr));
+		}
+
+		.home-features {
+			min-block-size: 29.75rem;
+			padding-inline: var(--layout-page-gutter);
+		}
+
+		.home-feature-grid {
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+			gap: var(--space-375);
+			inline-size: min(100%, var(--layout-content-max));
+		}
+
+		.home-feature-grid > li {
+			display: flex;
+			align-items: flex-end;
+		}
+	}
+</style>
