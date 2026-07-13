@@ -1,0 +1,274 @@
+---
+import type { PricingComparisonRow } from '../data/types';
+
+interface Props {
+	rows: readonly PricingComparisonRow[];
+}
+
+const { rows } = Astro.props;
+const plans = [
+	{ key: 'basic', label: 'BASIC' },
+	{ key: 'pro', label: 'PRO' },
+	{ key: 'business', label: 'BUSINESS' },
+] as const;
+---
+
+<section class="pricing-comparison" aria-labelledby="pricing-comparison-title">
+	<h2 id="pricing-comparison-title" class="pricing-comparison__heading">
+		COMPARE
+	</h2>
+	<p class="pricing-comparison__mobile-label" aria-hidden="true">
+		THE FEATURES
+	</p>
+	<table class="pricing-comparison__table">
+		<caption class="visually-hidden">
+			PhotoSnap plan feature comparison
+		</caption>
+		<colgroup>
+			<col class="pricing-comparison__feature-column" />
+			<col span="3" class="pricing-comparison__plan-column" />
+		</colgroup>
+		<thead class="pricing-comparison__head">
+			<tr>
+				<th scope="col">THE FEATURES</th>
+				{plans.map((plan) => <th scope="col">{plan.label}</th>)}
+			</tr>
+		</thead>
+		<tbody>
+			{
+				rows.map((row) => (
+					<tr>
+						<th scope="row">{row.feature}</th>
+						{plans.map((plan) => {
+							const included = row[plan.key];
+							return (
+								<td>
+									<span
+										class="pricing-comparison__mobile-plan"
+										aria-hidden="true"
+									>
+										{plan.label}
+									</span>
+									{included && (
+										<img
+											class="pricing-comparison__checkmark"
+											src="/assets/icons/ui/checkmark.svg"
+											alt=""
+											width="16"
+											height="12"
+											loading="lazy"
+											aria-hidden="true"
+										/>
+									)}
+									<span class="visually-hidden">
+										{included ? 'Included' : 'Not included'}
+									</span>
+								</td>
+							);
+						})}
+					</tr>
+				))
+			}
+		</tbody>
+	</table>
+</section>
+
+<style>
+	.pricing-comparison {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		min-block-size: 63.5rem;
+		background: var(--color-surface);
+		color: var(--color-text);
+	}
+
+	.pricing-comparison__heading,
+	.pricing-comparison__head {
+		position: absolute;
+		inline-size: 1px;
+		block-size: 1px;
+		margin: -1px;
+		overflow: hidden;
+		clip-path: inset(50%);
+		white-space: nowrap;
+	}
+
+	.pricing-comparison__mobile-label {
+		inline-size: min(
+			calc(100% - (2 * var(--layout-page-gutter))),
+			19.875rem
+		);
+		font-size: var(--text-preset-7-size);
+		font-weight: var(--font-weight-bold);
+		line-height: var(--text-preset-7-line-height);
+		letter-spacing: var(--text-preset-7-letter-spacing);
+	}
+
+	.pricing-comparison__table {
+		display: block;
+		inline-size: min(
+			calc(100% - (2 * var(--layout-page-gutter))),
+			19.875rem
+		);
+		block-size: 57rem;
+		margin-block-start: var(--space-300);
+		font-size: var(--text-preset-7-size);
+		font-weight: var(--font-weight-bold);
+		line-height: var(--text-preset-7-line-height);
+		letter-spacing: var(--text-preset-7-letter-spacing);
+		text-transform: uppercase;
+	}
+
+	.pricing-comparison__table tbody {
+		display: block;
+		border-block-start: 1px solid var(--color-text);
+	}
+
+	.pricing-comparison__table tbody tr {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		row-gap: var(--space-200);
+		min-block-size: 7.125rem;
+		padding-block: var(--space-300);
+		border-block-end: 1px solid var(--color-neutral-300);
+	}
+
+	.pricing-comparison__table th,
+	.pricing-comparison__table td {
+		padding: 0;
+		text-align: start;
+	}
+
+	.pricing-comparison__table tbody th {
+		grid-column: 1 / -1;
+	}
+
+	.pricing-comparison__table td {
+		display: grid;
+		grid-template-rows: 0.8125rem 0.75rem;
+		gap: var(--space-100);
+		justify-items: start;
+	}
+
+	.pricing-comparison__mobile-plan {
+		font-size: 0.625rem;
+		line-height: 1.3;
+		letter-spacing: 0.16667em;
+		opacity: 0.5;
+	}
+
+	.pricing-comparison__checkmark {
+		inline-size: 1rem;
+		block-size: 0.75rem;
+	}
+
+	@media (min-width: 48rem) {
+		.pricing-comparison {
+			min-block-size: 48.5rem;
+		}
+
+		.pricing-comparison__heading,
+		.pricing-comparison__head {
+			position: static;
+			inline-size: auto;
+			block-size: auto;
+			margin: 0;
+			overflow: visible;
+			clip-path: none;
+			white-space: normal;
+		}
+
+		.pricing-comparison__heading {
+			inline-size: min(calc(100% - (2 * 2.5rem)), 43.0625rem);
+			font-size: var(--text-preset-1-size);
+			font-weight: var(--font-weight-bold);
+			line-height: var(--text-preset-1-line-height);
+			letter-spacing: var(--text-preset-1-letter-spacing);
+			text-align: center;
+			text-transform: uppercase;
+		}
+
+		.pricing-comparison__mobile-label {
+			display: none;
+		}
+
+		.pricing-comparison__table {
+			display: table;
+			inline-size: min(calc(100% - (2 * 2.5rem)), 43.0625rem);
+			block-size: 34.5rem;
+			margin-block-start: var(--space-800);
+			table-layout: fixed;
+		}
+
+		.pricing-comparison__feature-column {
+			inline-size: calc(100% - 26.25rem);
+		}
+
+		.pricing-comparison__plan-column {
+			inline-size: 8.75rem;
+		}
+
+		.pricing-comparison__head {
+			display: table-header-group;
+		}
+
+		.pricing-comparison__table thead tr {
+			block-size: 2.5rem;
+			border-block-end: 1px solid var(--color-text);
+		}
+
+		.pricing-comparison__table tbody {
+			display: table-row-group;
+			border: 0;
+		}
+
+		.pricing-comparison__table tbody tr {
+			display: table-row;
+			block-size: 4rem;
+			padding: 0;
+		}
+
+		.pricing-comparison__table th,
+		.pricing-comparison__table td {
+			display: table-cell;
+			padding: 0;
+			vertical-align: middle;
+		}
+
+		.pricing-comparison__table th:first-child {
+			padding-inline-start: var(--space-300);
+		}
+
+		.pricing-comparison__table thead th:not(:first-child),
+		.pricing-comparison__table td {
+			text-align: center;
+		}
+
+		.pricing-comparison__mobile-plan {
+			display: none;
+		}
+
+		.pricing-comparison__checkmark {
+			margin-inline: auto;
+		}
+	}
+
+	@media (min-width: 75rem) {
+		.pricing-comparison {
+			min-block-size: 51rem;
+		}
+
+		.pricing-comparison__heading,
+		.pricing-comparison__table {
+			inline-size: min(
+				calc(100% - (2 * var(--layout-page-gutter))),
+				45.6875rem
+			);
+		}
+
+		.pricing-comparison__table {
+			margin-block-start: var(--space-700);
+		}
+	}
+</style>

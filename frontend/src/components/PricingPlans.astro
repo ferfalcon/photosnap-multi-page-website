@@ -1,0 +1,237 @@
+---
+import type { BillingPeriod, PricingPlan } from '../data/types';
+import PricingCard from './PricingCard.astro';
+
+interface Props {
+	plans: readonly PricingPlan[];
+	periods: readonly { value: BillingPeriod; label: string }[];
+	defaultPeriod?: BillingPeriod;
+}
+
+const { plans, periods, defaultPeriod = 'monthly' } = Astro.props;
+const monthlyLabel =
+	periods.find((period) => period.value === 'monthly')?.label ?? 'Monthly';
+const yearlyLabel =
+	periods.find((period) => period.value === 'yearly')?.label ?? 'Yearly';
+---
+
+<section
+	class="pricing-plans"
+	aria-labelledby="pricing-plans-title"
+	data-pricing-plans
+	data-billing-period={defaultPeriod}
+>
+	<h2 id="pricing-plans-title" class="visually-hidden">Choose a plan</h2>
+	<div class="billing-toggle">
+		<span class="billing-toggle__label" data-billing-label="monthly">
+			{monthlyLabel}
+		</span>
+		<button
+			class="billing-toggle__control"
+			type="button"
+			role="switch"
+			aria-checked={defaultPeriod === 'yearly' ? 'true' : 'false'}
+			aria-label="Yearly billing"
+			aria-describedby="billing-toggle-description"
+			data-billing-toggle
+			disabled
+		>
+			<span class="billing-toggle__knob" aria-hidden="true"></span>
+		</button>
+		<span class="billing-toggle__label" data-billing-label="yearly">
+			{yearlyLabel}
+		</span>
+		<span id="billing-toggle-description" class="visually-hidden">
+			Turn on to show yearly prices and turn off to show monthly prices.
+		</span>
+	</div>
+	<p class="visually-hidden" aria-live="polite" aria-atomic="true" data-pricing-status>
+		Monthly prices displayed.
+	</p>
+	<ul class="pricing-plans__list" role="list">
+		{
+			plans.map((plan) => (
+				<li>
+					<PricingCard plan={plan} />
+				</li>
+			))
+		}
+	</ul>
+</section>
+
+<script>
+	const pricingPlanSections = document.querySelectorAll<HTMLElement>(
+		'[data-pricing-plans]',
+	);
+
+	for (const section of pricingPlanSections) {
+		const toggle = section.querySelector<HTMLButtonElement>(
+			'[data-billing-toggle]',
+		);
+		const status = section.querySelector<HTMLElement>('[data-pricing-status]');
+
+		if (!toggle) continue;
+
+		const setPeriod = (period: 'monthly' | 'yearly', announce = true) => {
+			section.dataset.billingPeriod = period;
+			toggle.setAttribute('aria-checked', String(period === 'yearly'));
+
+			for (const card of section.querySelectorAll<HTMLElement>(
+				'[data-pricing-card]',
+			)) {
+				const price = card.querySelector<HTMLElement>('[data-pricing-price]');
+				const periodLabel = card.querySelector<HTMLElement>(
+					'[data-pricing-period]',
+				);
+
+				if (price) {
+					price.textContent =
+						period === 'yearly'
+							? (price.dataset.yearlyPrice ?? '')
+							: (price.dataset.monthlyPrice ?? '');
+				}
+
+				if (periodLabel) {
+					periodLabel.textContent =
+						period === 'yearly'
+							? (periodLabel.dataset.yearlyPeriod ?? '')
+							: (periodLabel.dataset.monthlyPeriod ?? '');
+				}
+			}
+
+			if (announce && status) {
+				status.textContent =
+					period === 'yearly'
+						? 'Yearly prices displayed.'
+						: 'Monthly prices displayed.';
+			}
+		};
+
+		const initialPeriod =
+			section.dataset.billingPeriod === 'yearly' ? 'yearly' : 'monthly';
+		setPeriod(initialPeriod, false);
+		toggle.disabled = false;
+		toggle.addEventListener('click', () => {
+			setPeriod(
+				section.dataset.billingPeriod === 'yearly' ? 'monthly' : 'yearly',
+			);
+		});
+	}
+</script>
+
+<style>
+	.pricing-plans {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		min-block-size: 91.8125rem;
+		padding-block-start: var(--space-800);
+		background: var(--color-surface);
+	}
+
+	.billing-toggle {
+		display: flex;
+		align-items: center;
+		gap: var(--space-400);
+		inline-size: 16rem;
+		block-size: 2rem;
+	}
+
+	.billing-toggle__label {
+		font-size: var(--text-preset-4-size);
+		font-weight: var(--font-weight-bold);
+		line-height: var(--text-preset-4-line-height);
+		opacity: 0.5;
+	}
+
+	.pricing-plans[data-billing-period='monthly']
+		.billing-toggle__label[data-billing-label='monthly'],
+	.pricing-plans[data-billing-period='yearly']
+		.billing-toggle__label[data-billing-label='yearly'] {
+		opacity: 1;
+	}
+
+	.billing-toggle__control {
+		position: relative;
+		inline-size: 4rem;
+		block-size: 2rem;
+		flex: none;
+		padding: var(--space-050);
+		border: 0;
+		border-radius: var(--radius-full);
+		background: var(--color-neutral-300);
+		cursor: pointer;
+	}
+
+	.billing-toggle__control::after {
+		position: absolute;
+		inset: -0.5rem;
+		content: '';
+	}
+
+	.billing-toggle__control:disabled {
+		cursor: not-allowed;
+	}
+
+	.billing-toggle__control:focus-visible {
+		outline: 0.1875rem solid var(--color-focus-outer);
+		outline-offset: 0.1875rem;
+	}
+
+	.billing-toggle__knob {
+		display: block;
+		inline-size: 1.5rem;
+		block-size: 1.5rem;
+		border-radius: 50%;
+		background: var(--color-surface-inverse);
+	}
+
+	.pricing-plans[data-billing-period='yearly'] .billing-toggle__knob {
+		translate: 2rem;
+	}
+
+	.pricing-plans__list {
+		display: grid;
+		gap: var(--space-300);
+		inline-size: min(
+			calc(100% - (2 * var(--layout-page-gutter))),
+			19.875rem
+		);
+		margin-block-start: var(--space-500);
+		padding: 0;
+		list-style: none;
+	}
+
+	.pricing-plans__list > li {
+		min-inline-size: 0;
+	}
+
+	@media (min-width: 48rem) {
+		.pricing-plans {
+			min-block-size: 72.125rem;
+			padding-block-start: var(--space-1400);
+		}
+
+		.pricing-plans__list {
+			inline-size: min(calc(100% - (2 * 2.4375rem)), 43.0625rem);
+		}
+	}
+
+	@media (min-width: 75rem) {
+		.pricing-plans {
+			min-block-size: 51.875rem;
+			padding-block-start: 7.5rem;
+		}
+
+		.pricing-plans__list {
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+			align-items: center;
+			gap: var(--space-375);
+			inline-size: min(
+				calc(100% - (2 * var(--layout-page-gutter))),
+				var(--layout-content-max)
+			);
+			margin-block-start: var(--space-600);
+		}
+	}
+</style>

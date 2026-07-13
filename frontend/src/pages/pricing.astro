@@ -1,4 +1,15 @@
 ---
+import BetaInvite from '../components/BetaInvite.astro';
+import PricingComparison from '../components/PricingComparison.astro';
+import PricingPlans from '../components/PricingPlans.astro';
+import SplitSection from '../components/SplitSection.astro';
+import {
+	billingPeriods,
+	defaultBillingPeriod,
+	pricingComparisonRows,
+	pricingHero,
+	pricingPlans,
+} from '../data/pricing';
 import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 
@@ -6,5 +17,22 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 	title="Pricing | Photosnap"
 	description="Compare Photosnap plans and choose the option that fits your photography."
 >
-	<h1 class="visually-hidden">Pricing</h1>
+	<SplitSection
+		heading={pricingHero.heading}
+		body={pricingHero.body}
+		image={pricingHero.image}
+		theme="dark"
+		imagePosition="right"
+		variant="page-hero"
+		headingLevel="h1"
+		accent
+		isLcp
+	/>
+	<PricingPlans
+		plans={pricingPlans}
+		periods={billingPeriods}
+		defaultPeriod={defaultBillingPeriod}
+	/>
+	<PricingComparison rows={pricingComparisonRows} />
+	<BetaInvite />
 </BaseLayout>
