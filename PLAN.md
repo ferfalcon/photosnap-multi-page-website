@@ -31,7 +31,7 @@ Observed repo facts:
 - There is no root package script. Package commands should be run from `frontend/`.
 - `frontend/package.json` exists and defines the Astro app.
 - `frontend/pnpm-lock.yaml` exists, so the Astro app should use `pnpm`.
-- `frontend/src/pages/index.astro` currently contains the minimal Astro starter page and has not yet been replaced by the PhotoSnap implementation.
+- The Home, Stories, Features, and Pricing routes now use the shared PhotoSnap layout; their page-specific content remains intentionally deferred.
 
 Current Astro setup:
 
@@ -55,7 +55,7 @@ This section records the review of `DESIGN.md`, `SPEC.md`, `PLAN.md`, and the re
 - Asset destinations needed to be corrected from generic `public/` to `frontend/public/`.
 - The plan underused `docs/starter-content/`, which already contains reference HTML copy and provided assets.
 - The yearly pricing uncertainty is partially resolved by `docs/starter-content/pricing.html`, which includes yearly prices for Basic, Pro, and Business.
-- The current `frontend/src/pages/index.astro` is still Astro starter content, so implementation should begin by replacing it through the planned component/page structure.
+- The original Astro starter page has been replaced by the shared PhotoSnap layout and route shells.
 - The plan needed to preserve root docs while making it clear that implementation happens under `frontend/`.
 
 ### 3.2 Changes made
@@ -420,10 +420,10 @@ The yearly toggle can be enabled after confirming:
 
 ### 10.3 Link data
 
-Until final destinations are confirmed:
-
 - Internal page links should use real routes.
-- `GET AN INVITE`, `PICK PLAN`, story-detail links, and social links should not silently use fake production destinations.
+- `GET AN INVITE` uses `/pricing` as the documented interim review-site destination; the final production invite flow remains unresolved.
+- Social marks remain decorative and non-interactive until real PhotoSnap profile URLs are supplied.
+- `PICK PLAN` and story-detail links should not silently use fake production destinations.
 - If a visible placeholder is necessary for review, it must be documented and should not trap keyboard users on `#`.
 
 ## 11. Accessibility implementation
@@ -442,12 +442,12 @@ Required accessibility work:
 - Support Escape-to-close for the mobile menu.
 - Prevent background interaction when the mobile menu is open if it visually behaves like an overlay.
 - Respect reduced-motion preferences for hover/transition effects.
-- Give social links accessible names.
+- Give social links accessible names when real profile destinations make them interactive.
 - Ensure decorative icons are hidden from assistive tech.
 - Give meaningful photos useful alt text where they communicate content; use empty alt only for decorative images.
 - Ensure the pricing comparison remains understandable to screen readers on desktop and mobile.
 
-**Assumption:** The mobile menu should be treated as modal-like because the inspected open state includes a panel/overlay behavior. If later confirmed as a simple dropdown, focus handling can be simplified but must remain keyboard accessible.
+**Assumption:** The mobile menu is a native popover enhanced with modal-like focus containment, background inertness, and scroll locking because the inspected open state includes an overlay.
 
 ## 12. Interaction behavior
 
@@ -461,6 +461,7 @@ Required accessibility work:
 ### 12.2 Buttons and links
 
 - Header CTA and beta CTA use the shared CTA label.
+- Header and footer invite CTAs use `/pricing` as the documented interim review-site destination.
 - Story cards expose a clear `Read story` action.
 - Pricing `PICK PLAN` controls are visually required, but final behavior is an open question.
 
@@ -528,7 +529,7 @@ Content checks:
 - Starter content matches the intended copy.
 - Known Figma/starter typos are either preserved intentionally or corrected after explicit approval.
 - Yearly prices match starter content if yearly behavior is enabled.
-- Social links and CTA destinations are documented if still unresolved.
+- Social-profile and final production invite destinations are documented as unresolved.
 
 ## 14. Risks and mitigations
 
@@ -643,26 +644,29 @@ Mitigation:
 - Add skip link and main landmark.
 - Replace the starter `index.astro` shell with the new layout pattern.
 
-**Next implementation step:** Step 5 — Build navigation components.
-
 ### Step 5 — Build navigation components
+
+**Status:** Completed — 2026-07-13
 
 - Implement header and footer from shared navigation data.
 - Implement mobile menu behavior.
 - Add active/current page state.
 - Validate keyboard navigation before moving deeper into page sections.
 
+**Next implementation step:** Step 6 — Build shared content components.
+
 ### Step 6 — Build shared content components
 
-- `ButtonLink.astro`
+- Reuse the `ButtonLink.astro` delivered early in Step 5.
 - `SplitSection.astro`
 - `StoryCard.astro`
 - `FeatureCard.astro`
 - `BetaInvite.astro`
 
-### Step 7 — Add data files
+### Step 7 — Add remaining data files
 
-- Add navigation, site, stories, features, and pricing data.
+- Reuse the shared types, navigation, and site data delivered early in Step 5.
+- Add stories, features, and pricing data.
 - Pull starter copy from `docs/starter-content/`.
 - Mark unresolved URLs and copy issues.
 
@@ -710,21 +714,21 @@ Mitigation:
 - The initial review site uses the supplied progressive JPEG, SVG, and PNG assets; modern-format derivatives are deferred until a measured performance pass.
 - Monthly pricing is the first visual state to implement.
 - Yearly prices from starter content are valid enough to store in data, but live toggle behavior still needs confirmation before being treated as final.
-- The mobile menu should behave as an accessible overlay/dropdown state.
+- The header switches between mobile and tablet/desktop navigation at `48rem`.
+- The mobile menu uses a native popover enhanced as an accessible overlay state.
+- `/pricing` is the approved interim review-site destination for `GET AN INVITE`.
+- Social marks remain decorative until real PhotoSnap profile URLs are supplied.
 - WordPress implementation is out of scope for this phase.
 
 ## 17. Open questions
 
 - Should known copy typos be preserved for design fidelity or corrected before client review?
-- What is the final destination or action for `GET AN INVITE`?
 - Should story cards navigate to future story-detail pages, or are they visual previews only for this phase?
 - What should `PICK PLAN` do in the review site?
-- What are the real social media URLs?
-- What is the exact breakpoint for switching from mobile header to tablet/desktop header?
 - Should the pricing yearly toggle be interactive in the Astro review site, or should yearly data remain non-interactive until approved?
 
 ## 18. Ready status
 
-Steps 1 through 4 are complete. The verified public asset namespace and responsive mapping are documented in `docs/asset-map.md`, and the Astro app now has its global CSS foundation and reusable document shell.
+Steps 1 through 5 are complete. The verified public asset namespace and responsive mapping are documented in `docs/asset-map.md`. The Astro app now has its global CSS foundation, reusable document shell, shared navigation data, four route shells, and responsive header, mobile menu, and footer components.
 
-The next safe step is Step 5: implement the shared navigation components and mobile menu behavior inside the established layout shell.
+The next safe step is Step 6: build the remaining shared content components while reusing the `ButtonLink.astro` delivered in Step 5.

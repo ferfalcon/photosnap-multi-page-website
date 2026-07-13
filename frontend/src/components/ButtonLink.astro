@@ -1,0 +1,116 @@
+---
+interface Props {
+	href: string;
+	label: string;
+	variant: 'solid' | 'arrow';
+	color: 'black' | 'white';
+	fullWidth?: boolean;
+}
+
+const { href, label, variant, color, fullWidth = false } = Astro.props;
+---
+
+<a
+	class:list={[
+		'button-link',
+		`button-link--${variant}`,
+		`button-link--${color}`,
+		{ 'button-link--full-width': fullWidth },
+	]}
+	href={href}
+>
+	<span class="button-link__label">{label}</span>
+	{
+		variant === 'arrow' && (
+			<svg
+				class="button-link__arrow"
+				width="43"
+				height="14"
+				viewBox="0 0 43 14"
+				aria-hidden="true"
+				focusable="false"
+			>
+				<g fill="none" fill-rule="evenodd" stroke="currentColor">
+					<path d="M0 7h41.864M35.428 1l6 6-6 6" />
+				</g>
+			</svg>
+		)
+	}
+</a>
+
+<style>
+	.button-link {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		font-size: var(--button-link-font-size, var(--text-preset-7-size));
+		font-weight: var(--font-weight-bold);
+		line-height: var(--button-link-line-height, var(--text-preset-7-line-height));
+		letter-spacing: var(
+			--button-link-letter-spacing,
+			var(--text-preset-7-letter-spacing)
+		);
+		text-decoration: none;
+		white-space: nowrap;
+	}
+
+	.button-link--solid {
+		min-block-size: var(--button-link-min-block-size, 2.5rem);
+		padding: var(--button-link-padding-block, var(--space-150)) var(--space-300);
+	}
+
+	.button-link--solid.button-link--black {
+		background: var(--color-surface-inverse);
+		color: var(--color-text-inverse);
+	}
+
+	.button-link--solid.button-link--white {
+		background: var(--color-surface);
+		color: var(--color-text);
+	}
+
+	.button-link--arrow {
+		min-block-size: 1rem;
+		gap: var(--space-200);
+	}
+
+	.button-link--arrow.button-link--black {
+		color: var(--color-text);
+	}
+
+	.button-link--arrow.button-link--white {
+		color: var(--color-text-inverse);
+	}
+
+	.button-link--full-width {
+		inline-size: 100%;
+	}
+
+	.button-link__arrow {
+		inline-size: 2.6875rem;
+		block-size: 0.875rem;
+		flex: none;
+	}
+
+	@media (hover: hover) {
+		.button-link--solid:hover {
+			background: var(--color-neutral-300);
+			color: var(--color-text);
+		}
+
+		.button-link--arrow:hover .button-link__label {
+			text-decoration: underline;
+			text-underline-offset: 0.25em;
+		}
+	}
+
+	.button-link--solid:active {
+		background: var(--color-neutral-300);
+		color: var(--color-text);
+	}
+
+	.button-link--arrow:focus-visible .button-link__label {
+		text-decoration: underline;
+		text-underline-offset: 0.25em;
+	}
+</style>

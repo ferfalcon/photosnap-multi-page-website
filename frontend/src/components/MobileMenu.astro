@@ -1,0 +1,199 @@
+---
+import type { LinkItem, NavItem } from '../data/types';
+import { isCurrentPath } from '../data/navigation';
+import ButtonLink from './ButtonLink.astro';
+
+interface Props {
+	items: readonly NavItem[];
+	currentPath: string;
+	cta: LinkItem;
+}
+
+const { items, currentPath, cta } = Astro.props;
+---
+
+<div id="mobile-navigation" class="mobile-menu" popover="auto">
+	<nav class="mobile-menu__content" aria-label="Primary">
+		<ul class="mobile-menu__links">
+			{
+				items.map((item) => (
+					<li>
+						<a
+							class="mobile-menu__link"
+							href={item.href}
+							aria-current={isCurrentPath(currentPath, item.href) ? 'page' : undefined}
+						>
+							{item.label}
+						</a>
+					</li>
+				))
+			}
+		</ul>
+		<div class="mobile-menu__divider" aria-hidden="true"></div>
+		<div class="mobile-menu__cta">
+			<ButtonLink
+				href={cta.href}
+				label={cta.label}
+				variant="solid"
+				color="black"
+				fullWidth
+			/>
+		</div>
+	</nav>
+</div>
+
+<script>
+	const menu = document.querySelector<HTMLElement>('#mobile-navigation');
+	const trigger = document.querySelector<HTMLButtonElement>('[data-mobile-menu-trigger]');
+	const brand = document.querySelector<HTMLElement>('[data-mobile-menu-brand]');
+	const backgroundElements = Array.from(
+		document.querySelectorAll<HTMLElement>('[data-mobile-menu-inert]'),
+	);
+	const desktopQuery = window.matchMedia('(min-width: 48rem)');
+
+	if (menu && trigger) {
+		let focusAfterClose: HTMLElement = trigger;
+		const getMenuFocusables = () => [
+			trigger,
+			...menu.querySelectorAll<HTMLElement>('a[href], button:not([disabled])'),
+		];
+
+		const setBackgroundInert = (isInert: boolean) => {
+			for (const element of backgroundElements) {
+				element.inert = isInert;
+			}
+		};
+
+		menu.addEventListener('toggle', (event) => {
+			const isOpen = (event as ToggleEvent).newState === 'open';
+
+			trigger.setAttribute('aria-expanded', String(isOpen));
+			document.body.classList.toggle('mobile-menu-open', isOpen);
+			setBackgroundInert(isOpen);
+
+			if (isOpen) {
+				focusAfterClose = trigger;
+				window.requestAnimationFrame(() => {
+					menu.querySelector<HTMLAnchorElement>('a')?.focus();
+				});
+				return;
+			}
+
+			window.requestAnimationFrame(() => {
+				focusAfterClose.focus();
+				focusAfterClose = trigger;
+			});
+		});
+
+		document.addEventListener('keydown', (event) => {
+			if (event.key !== 'Tab' || !menu.matches(':popover-open')) {
+				return;
+			}
+
+			const focusables = getMenuFocusables();
+			const first = focusables.at(0);
+			const last = focusables.at(-1);
+
+			if (event.shiftKey && document.activeElement === first) {
+				event.preventDefault();
+				last?.focus();
+				return;
+			}
+
+			if (!event.shiftKey && document.activeElement === last) {
+				event.preventDefault();
+				first?.focus();
+			}
+		});
+
+		desktopQuery.addEventListener('change', (event) => {
+			if (!event.matches || !menu.matches(':popover-open')) {
+				return;
+			}
+
+			focusAfterClose = brand ?? trigger;
+			menu.hidePopover();
+		});
+	}
+</script>
+
+<style>
+	.mobile-menu {
+		position: fixed;
+		inset: var(--layout-header-block-size) 0 auto;
+		inline-size: 100%;
+		max-inline-size: none;
+		block-size: 15.8125rem;
+		max-block-size: none;
+		margin: 0;
+		padding: 0;
+		overflow: visible;
+		border: 0;
+		background: var(--color-surface);
+		color: var(--color-text);
+	}
+
+	.mobile-menu::backdrop {
+		position: fixed;
+		inset: var(--layout-header-block-size) 0 0;
+		background: rgb(0 0 0 / 50%);
+	}
+
+	.mobile-menu__content {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		inline-size: min(calc(100% - (2 * var(--space-300))), 19.375rem);
+		block-size: 100%;
+		margin-inline: auto;
+	}
+
+	.mobile-menu__links {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-250);
+		list-style: none;
+		text-align: center;
+	}
+
+	.mobile-menu__link {
+		display: block;
+		font-size: var(--text-preset-5-size);
+		font-weight: var(--font-weight-bold);
+		line-height: var(--text-preset-5-bold-line-height);
+		letter-spacing: var(--text-preset-5-bold-letter-spacing);
+		text-decoration: none;
+	}
+
+	.mobile-menu__divider {
+		inline-size: 100%;
+		block-size: 1px;
+		margin-block: var(--space-250);
+		background: rgb(0 0 0 / 25%);
+	}
+
+	.mobile-menu__cta {
+		--button-link-font-size: var(--text-preset-5-size);
+		--button-link-line-height: var(--text-preset-5-bold-line-height);
+		--button-link-letter-spacing: var(--text-preset-5-bold-letter-spacing);
+		--button-link-min-block-size: 3rem;
+		--button-link-padding-block: var(--space-150);
+	}
+
+	:global(body.mobile-menu-open) {
+		overflow: hidden;
+	}
+
+	@media (hover: hover) {
+		.mobile-menu__link:hover {
+			text-decoration: underline;
+			text-underline-offset: 0.25em;
+		}
+	}
+
+	@media (min-width: 48rem) {
+		.mobile-menu:popover-open {
+			display: none;
+		}
+	}
+</style>
