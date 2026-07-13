@@ -664,18 +664,23 @@ Mitigation:
 - Add `FeatureCard.astro` with decorative feature-icon handling.
 - Add the data-driven `BetaInvite.astro` shared CTA.
 
-**Next implementation step:** Step 7 — Add remaining data files.
-
 ### Step 7 — Add remaining data files
 
-- Reuse the shared types, navigation, and site data delivered in Steps 5 and 6.
-- Add stories, features, and pricing data.
-- Pull starter copy from `docs/starter-content/`.
-- Mark unresolved URLs and copy issues.
+**Status:** Completed — 2026-07-13
+
+- Reuse and extend the shared types delivered in Steps 5 and 6.
+- Add typed Stories, Features, and Pricing data, including responsive image metadata.
+- Derive the Home story and feature previews from the complete source arrays.
+- Resolve the duplicated `World Tour 2019` starter entry by following the 16-story Figma/SPEC list.
+- Store the starter-provided yearly prices while keeping monthly as the default state.
+- Preserve and document known source-copy issues without inventing unresolved story or plan destinations.
+
+**Next implementation step:** Step 8 — Implement Home.
 
 ### Step 8 — Implement Home
 
 - Replace starter Home content with the full Home page structure.
+- Use the derived story and feature preview arrays from Step 7.
 - Tune desktop, tablet, and mobile layouts.
 - Validate story previews and feature preview layout.
 
@@ -696,7 +701,7 @@ Mitigation:
 
 - Add page hero.
 - Add monthly pricing cards.
-- Add yearly data but gate live switching if behavior is still unresolved.
+- Reuse the stored yearly data but gate live switching if behavior is still unresolved.
 - Add comparison data and responsive comparison layout.
 - Add beta invite CTA.
 
@@ -732,6 +737,6 @@ Mitigation:
 
 ## 18. Ready status
 
-Steps 1 through 6 are complete. The verified public asset namespace and responsive mapping are documented in `docs/asset-map.md`. The Astro app now has its global CSS foundation, reusable document shell, shared navigation data, four route shells, responsive navigation components, shared responsive-image contracts, and reusable split-section, story-card, feature-card, and beta-invite components.
+Steps 1 through 7 are complete. The verified public asset namespace and responsive mapping are documented in `docs/asset-map.md`. The Astro app now has its global CSS foundation, reusable document shell, shared navigation data, four route shells, responsive navigation components, reusable shared content components, and typed Stories, Features, and Pricing content ready for page composition.
 
-The next safe step is Step 7: add the remaining stories, features, and pricing data while reusing the shared contracts established in Steps 5 and 6.
+The next safe step is Step 8: implement the Home page using the shared content components and derived preview data.
