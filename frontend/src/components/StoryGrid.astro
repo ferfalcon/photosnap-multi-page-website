@@ -1,0 +1,54 @@
+---
+import type { Story } from '../data/types';
+import StoryCard from './StoryCard.astro';
+
+interface Props {
+	stories: readonly Story[];
+	showDate?: boolean;
+}
+
+const { stories, showDate = true } = Astro.props;
+---
+
+<ul class="story-grid">
+	{
+		stories.map((story) => (
+			<li>
+				<StoryCard
+					title={story.title}
+					author={story.author}
+					date={story.date}
+					image={story.image}
+					href={story.href}
+					showDate={showDate}
+					headingLevel="h3"
+				/>
+			</li>
+		))
+	}
+</ul>
+
+<style>
+	.story-grid {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr);
+		padding: 0;
+		list-style: none;
+	}
+
+	.story-grid > li {
+		min-inline-size: 0;
+	}
+
+	@media (min-width: 48rem) {
+		.story-grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+
+	@media (min-width: 75rem) {
+		.story-grid {
+			grid-template-columns: repeat(4, minmax(0, 1fr));
+		}
+	}
+</style>

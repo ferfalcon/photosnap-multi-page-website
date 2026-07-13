@@ -1,4 +1,7 @@
 ---
+import FeaturedStoryHero from '../components/FeaturedStoryHero.astro';
+import StoryGrid from '../components/StoryGrid.astro';
+import { featuredStory, stories } from '../data/stories';
 import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 
@@ -6,5 +9,9 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 	title="Stories | Photosnap"
 	description="Discover photo stories from photographers and visual storytellers around the world."
 >
-	<h1 class="visually-hidden">Stories</h1>
+	<FeaturedStoryHero story={featuredStory} />
+	<section aria-labelledby="all-stories-title">
+		<h2 id="all-stories-title" class="visually-hidden">All stories</h2>
+		<StoryGrid stories={stories} />
+	</section>
 </BaseLayout>
