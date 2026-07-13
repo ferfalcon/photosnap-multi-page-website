@@ -31,7 +31,7 @@ Observed repo facts:
 - There is no root package script. Package commands should be run from `frontend/`.
 - `frontend/package.json` exists and defines the Astro app.
 - `frontend/pnpm-lock.yaml` exists, so the Astro app should use `pnpm`.
-- The Home, Stories, Features, and Pricing routes now use the shared PhotoSnap layout; their page-specific content remains intentionally deferred.
+- The Home route now contains its complete responsive page content. Stories, Features, and Pricing use the shared PhotoSnap layout with their page-specific content intentionally deferred.
 
 Current Astro setup:
 
@@ -675,14 +675,18 @@ Mitigation:
 - Store the starter-provided yearly prices while keeping monthly as the default state.
 - Preserve and document known source-copy issues without inventing unresolved story or plan destinations.
 
-**Next implementation step:** Step 8 — Implement Home.
-
 ### Step 8 — Implement Home
+
+**Status:** Completed — 2026-07-13
 
 - Replace starter Home content with the full Home page structure.
 - Use the derived story and feature preview arrays from Step 7.
-- Tune desktop, tablet, and mobile layouts.
-- Validate story previews and feature preview layout.
+- Tune and validate the desktop, tablet, mobile, and intermediate-width layouts.
+- Prioritize only the art-directed Home hero as the LCP image and lazy-load all below-the-fold imagery.
+- Render semantic story and feature preview lists with sequential headings.
+- Keep Home story cards static and omit the Figma divider and `READ STORY` action until title-specific destinations are approved; this is an intentional Figma deviation.
+
+**Next implementation step:** Step 9 — Implement Stories.
 
 ### Step 9 — Implement Stories
 
@@ -737,6 +741,6 @@ Mitigation:
 
 ## 18. Ready status
 
-Steps 1 through 7 are complete. The verified public asset namespace and responsive mapping are documented in `docs/asset-map.md`. The Astro app now has its global CSS foundation, reusable document shell, shared navigation data, four route shells, responsive navigation components, reusable shared content components, and typed Stories, Features, and Pricing content ready for page composition.
+Steps 1 through 8 are complete. The verified public asset namespace and responsive mapping are documented in `docs/asset-map.md`. The Astro app now has its global CSS foundation, reusable document shell, shared navigation data, four routes, responsive navigation components, reusable shared content components, typed Stories, Features, and Pricing content, and the complete responsive Home page.
 
-The next safe step is Step 8: implement the Home page using the shared content components and derived preview data.
+The next safe step is Step 9: implement the Stories page using the shared story data and card components.

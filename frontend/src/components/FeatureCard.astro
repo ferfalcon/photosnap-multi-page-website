@@ -6,13 +6,26 @@ interface Props {
 	description: string;
 	icon: ImageCandidate;
 	headingLevel?: 'h2' | 'h3';
+	layout?: 'standard' | 'home-preview';
 }
 
-const { title, description, icon, headingLevel = 'h2' } = Astro.props;
+const {
+	title,
+	description,
+	icon,
+	headingLevel = 'h2',
+	layout = 'standard',
+} = Astro.props;
 const Heading = headingLevel;
 ---
 
-<article class="feature-card">
+<article
+	class:list={[
+		'feature-card',
+		`feature-card--${layout}`,
+		{ 'feature-card--compact-icon': icon.height < 72 },
+	]}
+>
 	<div class="feature-card__icon-stage" aria-hidden="true">
 		<img
 			src={icon.src}
@@ -49,6 +62,15 @@ const Heading = headingLevel;
 		max-block-size: 100%;
 	}
 
+	.feature-card--home-preview.feature-card--compact-icon
+		.feature-card__icon-stage {
+		block-size: 3.375rem;
+	}
+
+	.feature-card--home-preview.feature-card--compact-icon {
+		grid-template-rows: 3.375rem auto;
+	}
+
 	.feature-card__content {
 		display: flex;
 		flex-direction: column;
@@ -66,5 +88,11 @@ const Heading = headingLevel;
 		font-size: var(--text-preset-5-size);
 		line-height: var(--text-preset-5-line-height);
 		opacity: 0.6;
+	}
+
+	@media (min-width: 48rem) and (max-width: 74.999rem) {
+		.feature-card--home-preview {
+			inline-size: min(100%, 28.5625rem);
+		}
 	}
 </style>
