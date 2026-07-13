@@ -1,0 +1,78 @@
+@layer reset, tokens, base, components, utilities;
+
+@layer reset {
+	:where(
+			html,
+			body,
+			header,
+			nav,
+			main,
+			section,
+			article,
+			aside,
+			footer,
+			div,
+			span,
+			a,
+			button,
+			form,
+			fieldset,
+			label,
+			input,
+			select,
+			textarea,
+			table,
+			thead,
+			tbody,
+			tfoot,
+			tr,
+			th,
+			td,
+			ul,
+			ol,
+			li,
+			figure,
+			figcaption,
+			picture,
+			img,
+			svg,
+			canvas,
+			video,
+			h1,
+			h2,
+			h3,
+			h4,
+			h5,
+			h6,
+			p
+		) {
+		box-sizing: border-box;
+	}
+
+	:where(body, h1, h2, h3, h4, h5, h6, p, ul, ol, figure, blockquote) {
+		margin: 0;
+	}
+
+	:where(ul, ol) {
+		padding: 0;
+	}
+
+	:where(img, picture, svg, canvas, video) {
+		display: block;
+		max-inline-size: 100%;
+	}
+
+	:where(img, picture, video) {
+		block-size: auto;
+	}
+
+	:where(button, input, select, textarea) {
+		font: inherit;
+		color: inherit;
+	}
+
+	:where(table) {
+		border-collapse: collapse;
+		border-spacing: 0;
+	}
+}
