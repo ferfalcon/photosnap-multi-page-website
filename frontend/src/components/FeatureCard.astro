@@ -1,0 +1,70 @@
+---
+import type { ImageCandidate } from '../data/types';
+
+interface Props {
+	title: string;
+	description: string;
+	icon: ImageCandidate;
+	headingLevel?: 'h2' | 'h3';
+}
+
+const { title, description, icon, headingLevel = 'h2' } = Astro.props;
+const Heading = headingLevel;
+---
+
+<article class="feature-card">
+	<div class="feature-card__icon-stage" aria-hidden="true">
+		<img
+			src={icon.src}
+			alt=""
+			width={icon.width}
+			height={icon.height}
+			loading="lazy"
+		/>
+	</div>
+	<div class="feature-card__content">
+		<Heading class="feature-card__title">{title}</Heading>
+		<p class="feature-card__description">{description}</p>
+	</div>
+</article>
+
+<style>
+	.feature-card {
+		display: grid;
+		grid-template-rows: 4.5rem auto;
+		gap: var(--space-600);
+		inline-size: min(100%, 21.875rem);
+		margin-inline: auto;
+		color: var(--color-text);
+		text-align: center;
+	}
+
+	.feature-card__icon-stage {
+		display: grid;
+		place-items: center;
+		block-size: 4.5rem;
+	}
+
+	.feature-card__icon-stage img {
+		max-block-size: 100%;
+	}
+
+	.feature-card__content {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-200);
+	}
+
+	.feature-card__title {
+		font-size: var(--text-preset-4-size);
+		font-weight: var(--font-weight-bold);
+		line-height: var(--text-preset-4-line-height);
+		letter-spacing: var(--text-preset-4-letter-spacing);
+	}
+
+	.feature-card__description {
+		font-size: var(--text-preset-5-size);
+		line-height: var(--text-preset-5-line-height);
+		opacity: 0.6;
+	}
+</style>

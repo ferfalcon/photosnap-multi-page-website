@@ -5,9 +5,17 @@ interface Props {
 	variant: 'solid' | 'arrow';
 	color: 'black' | 'white';
 	fullWidth?: boolean;
+	ariaLabel?: string;
 }
 
-const { href, label, variant, color, fullWidth = false } = Astro.props;
+const {
+	href,
+	label,
+	variant,
+	color,
+	fullWidth = false,
+	ariaLabel,
+} = Astro.props;
 ---
 
 <a
@@ -18,6 +26,7 @@ const { href, label, variant, color, fullWidth = false } = Astro.props;
 		{ 'button-link--full-width': fullWidth },
 	]}
 	href={href}
+	aria-label={ariaLabel}
 >
 	<span class="button-link__label">{label}</span>
 	{
@@ -84,6 +93,10 @@ const { href, label, variant, color, fullWidth = false } = Astro.props;
 
 	.button-link--full-width {
 		inline-size: 100%;
+	}
+
+	.button-link--arrow.button-link--full-width {
+		justify-content: space-between;
 	}
 
 	.button-link__arrow {
