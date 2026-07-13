@@ -220,7 +220,8 @@ Asset rules:
 - Use the provided starter assets when available.
 - Rename assets to clear kebab-case names before use.
 - Keep public asset paths stable once pages reference them.
-- Record important crop/focal-point notes during implementation, either in comments near data entries or in `DESIGN.md` if the note is design-relevant.
+- Record responsive mappings and crop/focal-point notes in `docs/asset-map.md`.
+- Preserve the provided progressive JPEG, SVG, and PNG files for the initial review site; defer modern-format derivatives until a measured performance pass.
 - Do not rely on temporary Figma asset URLs in production code.
 
 ## 7. Proposed structure and responsibilities
@@ -610,16 +611,20 @@ Mitigation:
 
 ### Step 1 — Verify local tree and docs
 
+**Status:** Completed — 2026-07-13
+
 - Confirm the local repo matches the GitHub structure.
 - Confirm docs remain at root.
 - Confirm all work happens under `frontend/` for the Astro app.
 
 ### Step 2 — Organize assets
 
+**Status:** Completed — 2026-07-13
+
 - Inspect `docs/starter-content/` assets.
 - Copy needed assets into `frontend/public/assets/`.
 - Rename assets clearly.
-- Record focal point/crop notes while mapping assets to sections.
+- Record focal point/crop notes in `docs/asset-map.md` while mapping assets to sections.
 
 ### Step 3 — Add global CSS foundation
 
@@ -696,6 +701,7 @@ Mitigation:
 - Documentation remains at the repo root.
 - `pnpm` is the package manager for the Astro app.
 - Starter content and assets in `docs/starter-content/` are approved reference material unless they conflict with Figma or client direction.
+- The initial review site uses the supplied progressive JPEG, SVG, and PNG assets; modern-format derivatives are deferred until a measured performance pass.
 - Monthly pricing is the first visual state to implement.
 - Yearly prices from starter content are valid enough to store in data, but live toggle behavior still needs confirmation before being treated as final.
 - The mobile menu should behave as an accessible overlay/dropdown state.
@@ -710,10 +716,9 @@ Mitigation:
 - What are the real social media URLs?
 - What is the exact breakpoint for switching from mobile header to tablet/desktop header?
 - Should the pricing yearly toggle be interactive in the Astro review site, or should yearly data remain non-interactive until approved?
-- Should image crop notes live in `DESIGN.md`, data files, or a separate asset manifest?
 
 ## 18. Ready status
 
-The plan is ready for Astro implementation planning and then incremental implementation.
+Steps 1 and 2 are complete. The verified public asset namespace and responsive mapping are documented in `docs/asset-map.md`.
 
-The next safe step is to start with the `frontend/` foundation: global styles, layout shell, shared data files, and header/footer components before building page-specific sections.
+The next safe step is Step 3: add the global CSS foundation under `frontend/` before building the layout shell and components.
