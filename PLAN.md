@@ -9,7 +9,8 @@ It is based on:
 - the inspected Figma wrapper node `62857:72`
 - `DESIGN.md`
 - `SPEC.md`
-- the current repository information available during review
+- the current GitHub repository structure
+- the provided starter content and assets in the repository
 
 The plan covers the **Astro review-site phase only**. The approved Astro version will later become the visual and structural source of truth for the WordPress block-theme phase.
 
@@ -17,58 +18,68 @@ This is not component code. It is the implementation strategy to follow before w
 
 ## 2. Current repo understanding
 
-The repository appears to be in an early planning/documentation state.
+The repository is no longer just a planning/documentation shell. It already contains an Astro app.
 
-Observed facts from the remote repository inspection:
+Observed repo facts:
 
-- `README.md` exists.
-- The README describes a two-phase strategy: Astro review site first, WordPress final site later.
-- The README lists Astro, semantic HTML, CSS custom properties, Flexbox, CSS Grid, and mobile-first responsive workflow as the intended approach.
-- `package.json` was not found during remote file inspection.
-- `DESIGN.md`, `SPEC.md`, and `PLAN.md` were not found in the repository root during remote inspection, but they exist as current working documents in this conversation.
+- The Astro app lives in `frontend/`.
+- Astro source files live under `frontend/src/`.
+- Astro route files live under `frontend/src/pages/`.
+- Static files served directly by Astro belong in `frontend/public/`.
+- Provided starter HTML, images, and SVG assets live in `docs/starter-content/`.
+- Root-level `README.md`, `DESIGN.md`, `SPEC.md`, and `PLAN.md` document the project.
+- There is no root package script. Package commands should be run from `frontend/`.
+- `frontend/package.json` exists and defines the Astro app.
+- `frontend/pnpm-lock.yaml` exists, so the Astro app should use `pnpm`.
+- `frontend/src/pages/index.astro` currently contains the minimal Astro starter page and has not yet been replaced by the PhotoSnap implementation.
 
-**Assumption:** The Astro application has not been scaffolded yet, or the local checkout may contain files that were not visible through remote inspection.
+Current Astro setup:
 
-**Implementation consequence:** Start with a repo verification step. Do not scaffold, move documentation, or overwrite files until the actual local tree is inspected.
+- Astro version: `^7.0.7`
+- Node requirement: `>=22.12.0`
+- Scripts: `dev`, `build`, `preview`, `astro`
+- TypeScript config extends Astro strict mode.
+- `frontend/astro.config.mjs` is still minimal.
+- `frontend/AGENTS.md` instructs agents to use `astro dev --background` when starting the dev server.
+
+**Implementation consequence:** Do not scaffold a new Astro project. Build inside the existing `frontend/` app and preserve the repo’s current conventions.
 
 ## 3. Planning review findings
 
-This section records the second review of `DESIGN.md`, `SPEC.md`, and the previous `PLAN.md`.
+This section records the review of `DESIGN.md`, `SPEC.md`, `PLAN.md`, and the repository.
 
 ### 3.1 Issues found
 
-- The previous plan was slightly over-abstracted for a first Astro pass. Components such as a generic `Icon.astro`, `ResponsiveImage.astro`, `pages.ts`, and `pricing-toggle.ts` could be useful later, but creating all of them up front risks unnecessary complexity.
-- The yearly pricing toggle was not precise enough. `SPEC.md` requires a billing control, but yearly prices are not confirmed. The plan now treats yearly switching as a gated behavior instead of a default implementation task.
-- The placeholder destination policy needed to be stricter. Visible fake links such as `#` can create accessibility and review problems.
-- The responsive strategy needed stronger guidance for intermediate widths between 768px and 1440px, especially around the desktop 1110px grid and the tablet-to-desktop transition.
-- The asset step needed to happen earlier and include a simple crop/focal-point record before page implementation begins.
-- The implementation sequence did not explicitly call out no-JavaScript behavior for the mobile menu and pricing toggle.
-- The testing checklist needed clearer checks for source copy, image crops, focus states over photography, disabled/unresolved controls, and comparison-table semantics.
-- The plan needed a complexity-control rule so future implementation does not drift into a large framework-like component system.
+- The previous plan incorrectly assumed that `package.json` was not found and that the Astro app might not be scaffolded yet.
+- The previous proposed structure used root-level `src/` paths, but the actual app structure is `frontend/src/`.
+- Asset destinations needed to be corrected from generic `public/` to `frontend/public/`.
+- The plan underused `docs/starter-content/`, which already contains reference HTML copy and provided assets.
+- The yearly pricing uncertainty is partially resolved by `docs/starter-content/pricing.html`, which includes yearly prices for Basic, Pro, and Business.
+- The current `frontend/src/pages/index.astro` is still Astro starter content, so implementation should begin by replacing it through the planned component/page structure.
+- The plan needed to preserve root docs while making it clear that implementation happens under `frontend/`.
 
 ### 3.2 Changes made
 
-- Simplified the proposed source structure and marked optional abstractions as deferred.
-- Added a **complexity-control policy**: create a component when it is reused, isolates required behavior, or improves WordPress migration mapping.
-- Added a **yearly pricing decision gate** before implementing live toggle behavior.
-- Added stricter unresolved-link rules.
-- Moved asset export/manifest work earlier in the sequence.
-- Added responsive interpolation rules and exact target QA points.
-- Added accessibility details for inert/focus containment fallbacks, scroll lock, no-JavaScript states, and pricing comparison labels.
-- Added new risks for over-abstraction, fixed-pixel layout, CSS specificity, no-JavaScript behavior, and table/mobile duplication.
-- Updated the implementation sequence to stay incremental and easier to review.
+- Updated the repo understanding section to match the real repository layout.
+- Updated all proposed source paths to use `frontend/src/`.
+- Updated asset paths to use `frontend/public/`.
+- Added `docs/starter-content/` as a required reference source.
+- Replaced the “Astro may not be scaffolded” assumption with the confirmed existing Astro app.
+- Updated the pricing toggle plan to recognize that starter content provides yearly values, while still requiring visual and behavior confirmation before enabling live switching.
+- Kept the complexity-control policy from the previous review to avoid over-engineering.
 
 ## 4. Implementation principles
 
 - Work in small, reviewable steps.
 - Treat Figma, `DESIGN.md`, and `SPEC.md` as source of truth.
+- Use `docs/starter-content/` as the source for provided starter copy and provided assets, while checking against Figma when there are mismatches.
 - Do not copy Figma-generated React/Tailwind code into the project.
 - Do not add Tailwind unless explicitly requested later.
 - Use Astro, semantic HTML, TypeScript data files, and maintainable plain CSS.
 - Prefer static HTML and CSS. Add JavaScript only for required interactions.
 - Match the inspected target frames at **375px**, **768px**, and **1440px** before optimizing intermediate widths.
 - Keep page sections and component boundaries compatible with a future WordPress block theme.
-- Do not invent product behavior that is missing from the design or spec.
+- Do not invent product behavior that is missing from the design, spec, or starter content.
 - Document assumptions instead of silently guessing.
 
 ## 5. Complexity-control policy
@@ -89,39 +100,53 @@ Deferred unless needed during implementation:
 - A generic `Icon.astro` component.
 - A generic `ResponsiveImage.astro` component.
 - A separate `pages.ts` content registry.
-- A live `pricing-toggle.ts` script before yearly pricing is confirmed.
 - A complex design-token utility system beyond the tokens required by the Figma style guide.
 
 ## 6. Files to create or modify
 
 ### 6.1 Root files
 
-Create or modify only as needed after local verification:
+Root-level documentation should remain at the repo root unless the user later chooses a `/docs` documentation structure.
 
 ```txt
 README.md
 DESIGN.md
 SPEC.md
 PLAN.md
-package.json
-astro.config.mjs
-tsconfig.json
-.gitignore
+AGENTS.md
 ```
 
 Notes:
 
 - `README.md` already exists and should not be rewritten unless setup commands, live links, or project status change.
-- `DESIGN.md`, `SPEC.md`, and `PLAN.md` should live in the repository root unless the user chooses a `/docs` folder.
-- If the local repo already has Astro config files, adapt to the existing structure instead of replacing it.
-- Use the package manager already present in the repo. If there is no lockfile or package-manager field, confirm whether to use `npm`, `pnpm`, or another tool before standardizing commands.
+- `DESIGN.md`, `SPEC.md`, and `PLAN.md` are project documentation files.
+- `AGENTS.md` contains repository-level conventions and should be followed.
 
-### 6.2 Proposed source structure
+### 6.2 Existing Astro app files
 
-Start with this lean structure:
+Modify existing app files only as needed:
 
 ```txt
-src/
+frontend/package.json
+frontend/astro.config.mjs
+frontend/tsconfig.json
+frontend/src/pages/index.astro
+frontend/AGENTS.md
+```
+
+Notes:
+
+- Do not recreate the Astro project.
+- Do not run package commands from the repo root.
+- Use `cd frontend && pnpm ...` for app commands.
+- Keep `frontend/AGENTS.md` instructions in effect for work inside `frontend/`.
+
+### 6.3 Proposed source structure
+
+Start with this lean structure inside the existing Astro app:
+
+```txt
+frontend/src/
   layouts/
     BaseLayout.astro
 
@@ -159,29 +184,19 @@ src/
   styles/
     reset.css
     tokens.css
-    global.css
-
-  scripts/
-    mobile-menu.ts
+    base.css
+    utilities.css
+    components.css
 ```
 
-Optional later files, only if repeated code justifies them:
+### 6.4 Asset structure
+
+Static assets should be copied or organized under `frontend/public/`.
+
+Proposed structure:
 
 ```txt
-src/components/Logo.astro
-src/components/Icon.astro
-src/components/ResponsiveImage.astro
-src/styles/typography.css
-src/styles/utilities.css
-src/scripts/pricing-toggle.ts
-```
-
-**Assumption:** Astro component scoped styles plus a small set of global CSS files will be enough. If styles become hard to maintain, split typography/utilities out of `global.css` later.
-
-### 6.3 Proposed public asset structure
-
-```txt
-public/
+frontend/public/
   assets/
     images/
       home/
@@ -189,1040 +204,516 @@ public/
       features/
       pricing/
       shared/
-
     icons/
-      logo.svg
-      hamburger.svg
-      close.svg
-      arrow-black.svg
-      arrow-white.svg
-      feature-responsive.svg
-      feature-no-limit.svg
-      feature-embed.svg
-      feature-domain.svg
-      feature-exposure.svg
-      feature-drag-drop.svg
-      social-facebook.svg
-      social-youtube.svg
-      social-twitter.svg
-      social-pinterest.svg
-      social-instagram.svg
-      check.svg
+    logos/
+    favicons/
 ```
 
-Also create an asset notes file if crops/focal points become hard to track:
+Reference source:
 
 ```txt
-public/assets/ASSETS.md
+docs/starter-content/
 ```
 
-`ASSETS.md` should record:
+Asset rules:
 
-- original Figma use case
-- local filename
-- page/section usage
-- whether the image is decorative or content-bearing
-- desktop/tablet/mobile crop notes
-- alt-text status
+- Use the provided starter assets when available.
+- Rename assets to clear kebab-case names before use.
+- Keep public asset paths stable once pages reference them.
+- Record important crop/focal-point notes during implementation, either in comments near data entries or in `DESIGN.md` if the note is design-relevant.
+- Do not rely on temporary Figma asset URLs in production code.
 
-**Assumption:** Assets will be exported from Figma and committed locally. Temporary Figma asset URLs must not be used in the site.
+## 7. Proposed structure and responsibilities
 
-## 7. Proposed component responsibilities
+### 7.1 Layout
 
-### 7.1 `BaseLayout.astro`
+`BaseLayout.astro` should provide:
 
-Responsibilities:
+- document shell
+- page title and description props
+- global CSS imports
+- skip link
+- header
+- `<main id="main-content">`
+- footer
 
-- Provide the document shell.
-- Load global CSS.
-- Set page `<title>` and metadata.
-- Render skip link, header, main slot, and footer.
-- Pass current page to header/footer navigation.
-- Keep one `<main id="main-content">` per page.
+### 7.2 Pages
 
-### 7.2 `Header.astro`
+`index.astro` renders:
 
-Responsibilities:
+- Home hero split section
+- two alternating split sections
+- four story preview cards
+- three feature preview cards
 
-- Render desktop/tablet logo, primary nav, and `GET AN INVITE` CTA.
-- Render mobile logo and menu trigger.
-- Mark the current page with `aria-current="page"`.
-- Keep the header non-sticky unless the client requests sticky behavior.
-- Delegate mobile overlay panel behavior to `MobileMenu.astro` and `mobile-menu.ts`.
+`stories.astro` renders:
 
-### 7.3 `MobileMenu.astro`
+- featured story hero
+- full stories grid
 
-Responsibilities:
+`features.astro` renders:
 
-- Match the Figma open state: white panel, centered links, divider, full-width CTA, dark overlay.
-- Use a button trigger with `aria-expanded` and `aria-controls`.
-- Close on explicit close button, Escape, and menu-link activation.
-- Return focus to the trigger on close.
-- Prevent accidental background interaction while open.
-- Clean up open state when resizing into tablet/desktop layout.
+- page hero split section
+- six-feature grid
+- beta invite CTA
 
-Implementation note:
+`pricing.astro` renders:
 
-- Use small vanilla JavaScript.
-- Prefer `inert` for background content when available, with an `aria-hidden`/focus-management fallback if needed.
-- Do not introduce a client-side framework for this interaction.
+- page hero split section
+- billing control
+- three pricing cards
+- pricing comparison
+- beta invite CTA
 
-### 7.4 `Footer.astro`
+### 7.3 Data files
 
-Responsibilities:
+Use TypeScript data files to keep page templates clean and CMS-ready.
 
-- Render logo, social links, footer nav, invite CTA, and copyright.
-- Reflow from desktop two-sided layout to tablet compact layout to mobile centered stack.
-- Give social links accessible labels.
-- Follow unresolved-link policy for social URLs.
+`navigation.ts`:
 
-### 7.5 `ButtonLink.astro`
+- header nav items
+- footer nav items
 
-Responsibilities:
+`site.ts`:
 
-- Support these visual variants:
-  - text + arrow on light background
-  - text + arrow on dark/image background
-  - solid black button
-  - solid white button
-- Render as `<a>` only when a valid destination exists.
-- Render as a documented visual placeholder when a destination is unresolved.
-- Hide decorative arrows from assistive technology.
-- Provide visible hover and focus states even if the exact Figma active state remains unconfirmed.
+- global CTA label and destination
+- social links
+- shared footer content
+- beta invite content
 
-### 7.6 `SplitSection.astro`
+`stories.ts`:
 
-Responsibilities:
+- featured story
+- story card list
+- home story preview subset
 
-- Cover Home hero, Home secondary sections, Features hero, and Pricing hero.
-- Support dark and light text-panel variants.
-- Support image-left and image-right layouts.
-- Support desktop/tablet side-by-side layout and mobile stacked layout.
-- Support gradient accent position changes:
-  - vertical on desktop/tablet
-  - horizontal top-left on mobile
-- Allow section-specific image crop data by breakpoint.
+`features.ts`:
 
-### 7.7 `FeaturedStoryHero.astro`
+- full feature list
+- home feature preview subset
 
-Responsibilities:
+`pricing.ts`:
 
-- Render the Stories page featured hero.
-- Use full-image overlay layout on desktop/tablet.
-- Use stacked image + black content panel on mobile.
-- Preserve label, title, metadata, body copy, and CTA order.
+- pricing plans
+- monthly and yearly prices
+- comparison rows
 
-### 7.8 `StoryGrid.astro` and `StoryCard.astro`
+`types.ts`:
 
-Responsibilities:
-
-- Render Home story previews and Stories page story list from shared story data.
-- Support Home variant with no visible dates.
-- Support Stories variant with visible dates.
-- Preserve full-bleed no-gutter layout.
-- Support card sizes:
-  - desktop: 360 × 500
-  - tablet: approximately 384 × 500
-  - mobile: 375 × 375 / full viewport width square-like cards
-- Avoid nested links.
-- If story destinations are unresolved, preserve visual CTA but do not create fake clickable cards.
-
-### 7.9 `FeatureGrid.astro` and `FeatureCard.astro`
-
-Responsibilities:
-
-- Render Home feature preview and full Features page grid from shared feature data.
-- Support different responsive behavior by variant:
-  - Home: desktop 3 columns; tablet/mobile single centered column.
-  - Features page: desktop 3 columns; tablet 2 columns; mobile single centered column.
-- Normalize icon areas so the different icon sizes align visually.
-
-### 7.10 `BetaInvite.astro`
-
-Responsibilities:
-
-- Render only on Features and Pricing pages.
-- Support desktop/tablet horizontal text + CTA layout.
-- Support mobile stacked layout.
-- Render dark photographic background, overlay, and gradient accent.
-- Follow unresolved-link policy for `GET AN INVITE`.
-
-### 7.11 `PricingPlans.astro` and `PricingCard.astro`
-
-Responsibilities:
-
-- Render monthly pricing as the confirmed default state.
-- Render Basic, Pro, and Business cards from pricing data.
-- Preserve Pro featured treatment:
-  - desktop: taller dark card with top gradient accent
-  - tablet: horizontal dark card with left gradient accent
-  - mobile: vertical dark card with top gradient accent
-- Preserve desktop/tablet/mobile card layout differences.
-- Follow unresolved-link policy for `PICK PLAN`.
-
-Yearly pricing gate:
-
-- Do not implement live yearly price switching until yearly prices and period labels are confirmed.
-- If yearly values remain unconfirmed, render the billing control with Monthly active and Yearly disabled or clearly marked as unavailable for review.
-- If the client approves prototype-only yearly behavior, document the fake/prototype values directly in `pricing.ts` and do not treat them as production data.
-
-### 7.12 `PricingComparison.astro`
-
-Responsibilities:
-
-- Render the comparison content from structured rows.
-- Desktop/tablet: use semantic table markup or markup that preserves the same feature/plan relationships for assistive technology.
-- Mobile: render a stacked feature-by-feature comparison matching the inspected mobile layout.
-- Communicate both included and not-included states to assistive technology.
-- Do not represent missing features as unexplained empty cells for screen readers.
+- shared interfaces for navigation items, stories, features, pricing plans, comparison rows, and responsive image metadata.
 
 ## 8. Styling strategy
 
-### 8.1 CSS architecture
+Use plain CSS with custom properties.
 
-Use plain CSS with custom properties. Do not use Tailwind.
+Recommended CSS layers:
 
-Initial CSS files:
+- `reset.css` — small modern reset.
+- `tokens.css` — colors, typography, spacing, gradients, layout values, breakpoints.
+- `base.css` — document defaults, font loading, body styles, links, focus defaults.
+- `utilities.css` — minimal reusable layout helpers only when needed.
+- `components.css` — component-level styles if styles are not colocated in Astro components.
 
-```txt
-src/styles/reset.css
-src/styles/tokens.css
-src/styles/global.css
-```
+**Assumption:** Component-scoped Astro styles may be used where they keep a component easier to reason about, but global design tokens should live in global CSS.
 
-Keep shared design tokens global. Keep component-specific layout and variant styles inside the relevant `.astro` component when the styles are not reused.
+Typography should use the Figma-defined DM Sans system:
 
-Split into additional CSS files only when the file size or repetition justifies it:
+- large uppercase headings
+- compact uppercase navigation and CTA labels
+- body copy with reduced opacity where specified
+- strong letter spacing on headings and controls
 
-```txt
-src/styles/typography.css
-src/styles/utilities.css
-```
+Color tokens should include:
 
-### 8.2 Design tokens
+- black
+- white
+- light gray backgrounds
+- dark text opacity variants
+- white text opacity variants
+- brand gradient accent
 
-Define CSS custom properties for:
+CSS should avoid:
 
-- neutral colors: black, white, light gray, divider gray
-- opacity patterns: 60%, 50%, 25%
-- brand gradient: `#ffc593 → #bc7198 → #5a77ff`
-- typography presets from the Figma style guide
-- spacing values: 0, 4, 8, 12, 16, 20, 24, 30, 32, 40, 48, 56, 64, 80, 112
-- layout widths: 310, 318, 350, 387, 610, 689, 731, 1110, 1440
-- header/footer heights
-- breakpoints
-
-### 8.3 Typography approach
-
-Use DM Sans as the primary font.
-
-Create reusable text preset classes or component-level CSS variables for:
-
-- `text-preset-1`: 40px / 48px / 4.1667px letter spacing / bold
-- `text-preset-2`: 32px / 1.25 / 3.5px letter spacing / bold
-- `text-preset-3`: 24px / 1.05 / bold
-- `text-preset-4`: 18px / 1.4 / bold
-- `text-preset-5`: 15px / 1.65 / regular
-- `text-preset-5-bold`: 15px / 1.35 / 2.5px letter spacing / bold
-- `text-preset-6`: 13px / 1.3 / regular
-- `text-preset-7`: 12px / 1.35 / 2px letter spacing / bold
-
-Accessibility rule:
-
-- Keep readable text in the DOM.
-- Use CSS `text-transform` and `letter-spacing` for the visual style.
-- Do not insert spaces between letters in actual text content.
-
-### 8.4 Layout approach
-
-Use CSS Grid and Flexbox:
-
-- Grid for story grids, feature grids, pricing layout, and comparison table layout.
-- Flexbox for header, footer, CTA alignment, card internals, and button/icon alignment.
-- Avoid absolute positioning for layout.
-- Use absolute positioning only for overlays, image layers, and accent bars when it is the simplest faithful solution.
-- Use `min()`, `max()`, and `clamp()` only where they solve real overflow/interpolation issues.
-- Avoid overusing `clamp()` for Figma-critical values that should match exact frame sizes at 375, 768, and 1440.
-
-### 8.5 CSS maintainability rules
-
-- Prefer low-specificity class selectors.
-- Avoid deep descendant selectors that couple components together.
-- Keep variant names explicit, for example `split-section--dark`, `story-grid--home`, `feature-grid--preview`.
-- Do not put page-specific exceptions into global CSS unless the pattern is truly shared.
-- Keep image object-position values in data or clearly named CSS custom properties, not scattered as magic numbers.
+- excessive utility classes
+- deeply nested selectors
+- one-off magic numbers without comments
+- component styles that depend on page order rather than class names
 
 ## 9. Responsive implementation strategy
 
-### 9.1 Breakpoint plan
+### 9.1 Target widths
+
+Primary QA widths:
+
+- Mobile: `375px`
+- Tablet: `768px`
+- Desktop: `1440px`
+
+Intermediate widths should fluidly interpolate without causing overflow, cropped text, broken grids, or awkward image distortion.
+
+### 9.2 Breakpoint approach
 
 Use mobile-first CSS.
 
-Proposed starting breakpoints:
+Recommended breakpoint intent:
 
-```txt
-base:   mobile layout, optimized for 375px
-48rem:  tablet layout, matching 768px Figma frames
-75rem:  desktop layout, matching 1440px Figma frames and the 1110px grid
-```
+- Mobile: stacked layouts, mobile header, one-column story cards.
+- Tablet: horizontal split sections where Figma keeps them, two-column story grid, tablet-specific pricing card layout.
+- Desktop: full 1440px layout with 1110px central content grid where applicable.
 
-**Assumption:** Desktop layout should begin around 1200px because the 1110px content grid needs meaningful side gutters.
+Exact breakpoints may be adjusted during implementation to preserve the inspected Figma behavior.
 
-**Open question:** The exact tablet-to-desktop switch is not defined in Figma and must be visually reviewed during implementation.
+**Assumption:** The mobile header applies below the tablet layout. The exact switch point should be confirmed visually during implementation.
 
-### 9.2 Exact target testing
-
-Every major section must be checked at:
-
-- 375px
-- 768px
-- 1440px
-
-Also check:
-
-- 320px or 360px for narrow mobile overflow
-- 1024px for intermediate tablet behavior
-- 1280px for transition into desktop rules
-- wider than 1440px for full-bleed sections and constrained containers
-
-### 9.3 Interpolation rules
-
-- At the exact Figma target widths, fidelity wins over generic fluid elegance.
-- Between target widths, layouts may scale fluidly if they do not contradict the inspected frames.
-- Full-bleed image/card strips should span the viewport.
-- Text content should remain constrained to readable widths.
-- Desktop split sections should not force `610px + 830px` columns on viewports that cannot support them.
-- Tablet split sections should preserve the Figma rhythm: roughly 495px text area and 273px image area at 768px.
-- Sub-375px mobile should avoid horizontal scroll even if exact Figma fidelity is impossible.
-
-### 9.4 Page-specific responsive notes
+### 9.3 Page-specific responsive rules
 
 Home:
 
-- Mobile split sections stack image first, text second.
-- Tablet split sections remain side-by-side.
-- Desktop split sections use the 610 / 830 visual rhythm at 1440px.
-- Home story cards: 1 column mobile, 2 columns tablet, 4 columns desktop.
-- Home feature preview: 1 centered column on mobile/tablet, 3 columns desktop.
+- Desktop: split hero, alternating image/text sections, four-card story row, three-card feature row.
+- Tablet: split sections remain horizontal with narrower image columns; story previews become a two-by-two grid; home features stack in a centered single column.
+- Mobile: split sections stack image above text; story cards become a one-column list; features stack vertically.
 
 Stories:
 
-- Featured story: stacked mobile; image-overlay desktop/tablet.
-- Story grid: 1 column mobile, 2 columns tablet, 4 columns desktop.
-- Preserve no gutters between story cards.
+- Desktop: featured story full-width hero, four-column story grid.
+- Tablet: featured story remains image-backed; story grid becomes two columns.
+- Mobile: featured story separates image and black content panel; story grid becomes one column with shorter card height.
 
 Features:
 
-- Hero follows standard split-section behavior.
-- Feature cards: 1 column mobile, 2 columns tablet, 3 columns desktop.
-- Beta invite appears after feature list.
+- Desktop: hero split, six features in a three-column/two-row grid.
+- Tablet: hero split, six features in two columns.
+- Mobile: hero stacks image above text, features stack in one column.
 
 Pricing:
 
-- Hero follows standard split-section behavior.
-- Pricing cards: vertical cards mobile, horizontal stacked cards tablet, 3-column cards desktop.
-- Pricing comparison: stacked mobile, table/table-like desktop and tablet.
-- Monthly state is the default and confirmed state.
-- Yearly switching is blocked until content is confirmed.
+- Desktop: hero split, centered billing toggle, three-card pricing row, desktop comparison table.
+- Tablet: hero split, pricing cards become full-width horizontal cards stacked vertically, comparison remains table-like.
+- Mobile: hero stacks, pricing cards stack, comparison becomes mobile-friendly grouped rows.
 
-## 10. Data / props implementation plan
+## 10. Data / props implementation
 
-### 10.1 Data files
+### 10.1 Required data principles
 
-Create structured TypeScript data files:
+- Store repeated content in data files, not duplicated page markup.
+- Keep route/page-specific ordering in page files or simple arrays.
+- Include enough image metadata to support alt text and crop tuning.
+- Keep content close to starter HTML unless `DESIGN.md` or `SPEC.md` intentionally overrides it.
 
-```txt
-src/data/types.ts
-src/data/navigation.ts
-src/data/site.ts
-src/data/stories.ts
-src/data/features.ts
-src/data/pricing.ts
+### 10.2 Pricing data
+
+Pricing plans should support both monthly and yearly values because starter content provides both:
+
+- Basic: `$19.00` per month, `$190.00` per year
+- Pro: `$39.00` per month, `$390.00` per year
+- Business: `$99.00` per month, `$990.00` per year
+
+Implementation should begin with the monthly visual state because Figma inspection confirmed the monthly state most clearly.
+
+The yearly toggle can be enabled after confirming:
+
+- visual state for yearly toggle
+- whether prices update client-side
+- no-JavaScript fallback behavior
+- whether yearly values from starter content are approved for this review site
+
+### 10.3 Link data
+
+Until final destinations are confirmed:
+
+- Internal page links should use real routes.
+- `GET AN INVITE`, `PICK PLAN`, story-detail links, and social links should not silently use fake production destinations.
+- If a visible placeholder is necessary for review, it must be documented and should not trap keyboard users on `#`.
+
+## 11. Accessibility implementation
+
+Required accessibility work:
+
+- Add a skip link to main content.
+- Use semantic landmarks: header, nav, main, section, footer.
+- Use descriptive page titles and meta descriptions.
+- Mark the current page in nav with `aria-current="page"`.
+- Use real links for navigation and CTAs that navigate.
+- Use buttons for controls that change UI state, such as mobile menu toggle and billing toggle.
+- Provide visible focus states on light backgrounds, dark backgrounds, and photography-backed cards.
+- Ensure mobile menu state uses `aria-expanded`, `aria-controls`, and an accessible label.
+- Return focus to the menu button after closing the mobile menu.
+- Support Escape-to-close for the mobile menu.
+- Prevent background interaction when the mobile menu is open if it visually behaves like an overlay.
+- Respect reduced-motion preferences for hover/transition effects.
+- Give social links accessible names.
+- Ensure decorative icons are hidden from assistive tech.
+- Give meaningful photos useful alt text where they communicate content; use empty alt only for decorative images.
+- Ensure the pricing comparison remains understandable to screen readers on desktop and mobile.
+
+**Assumption:** The mobile menu should be treated as modal-like because the inspected open state includes a panel/overlay behavior. If later confirmed as a simple dropdown, focus handling can be simplified but must remain keyboard accessible.
+
+## 12. Interaction behavior
+
+### 12.1 Header and mobile menu
+
+- Desktop/tablet nav links navigate to real routes.
+- Mobile menu opens from the hamburger button and closes from the close button, Escape key, and route selection.
+- Menu state should not leave focus behind hidden elements.
+- Resizing from mobile to tablet/desktop while the menu is open should reset or safely close the menu.
+
+### 12.2 Buttons and links
+
+- Header CTA and beta CTA use the shared CTA label.
+- Story cards expose a clear `Read story` action.
+- Pricing `PICK PLAN` controls are visually required, but final behavior is an open question.
+
+### 12.3 Pricing toggle
+
+Initial safe path:
+
+- Render monthly state first.
+- Include yearly data in `pricing.ts`.
+- Enable toggle only when behavior and fallback are agreed.
+
+If enabled:
+
+- Use a button or switch semantics.
+- Update visible price and period labels.
+- Expose current billing state to assistive tech.
+- Provide a no-JavaScript fallback that shows at least the monthly pricing clearly.
+
+## 13. Testing checklist
+
+Run from `frontend/`.
+
+Required command validation:
+
+```sh
+pnpm install
+pnpm build
+pnpm preview
 ```
 
-### 10.2 Content types
-
-Define shared TypeScript interfaces only as needed by the first implementation pass:
-
-- `LinkItem`
-- `Cta`
-- `ImageAsset`
-- `SplitSectionContent`
-- `Story`
-- `Feature`
-- `PricingPlan`
-- `PricingComparisonRow`
-- `SocialLink`
-- `PageMeta`
-
-### 10.3 Suggested field guidance
-
-`LinkItem`:
-
-- required: `label`
-- optional: `href`, `isExternal`, `isUnresolved`
-
-`Cta`:
-
-- required: `label`, `variant`
-- optional: `href`, `isUnresolved`, `ariaLabel`
-
-`ImageAsset`:
-
-- required: `src`, `alt`, `role`
-- optional: `width`, `height`, `desktopPosition`, `tabletPosition`, `mobilePosition`
-
-`Story`:
-
-- required: `id`, `title`, `author`, `image`, `alt`
-- optional: `date`, `href`, `isFeatured`, `description`
-
-`PricingPlan`:
-
-- required: `id`, `name`, `description`, `monthlyPrice`, `periodLabel`, `isFeatured`
-- optional: `yearlyPrice`, `yearlyPeriodLabel`, `href`, `isUnresolved`
-
-`PricingComparisonRow`:
-
-- required: `label`, `included`
-- `included` should map each plan id to `true` or `false`, not rely on empty values.
-
-### 10.4 Data-driven rendering
-
-Use data-driven rendering for:
-
-- header nav
-- footer nav
-- social links
-- Home story previews
-- Stories page story list
-- Home feature previews
-- Features page feature list
-- pricing plans
-- pricing comparison rows
-
-Avoid duplicating repeated content directly inside page templates.
-
-### 10.5 Unresolved destination policy
-
-The design has unresolved destinations for:
-
-- `GET AN INVITE`
-- `PICK PLAN`
-- story card CTAs
-- social links
-
-Rules:
-
-1. Do not use `href="#"` as a fake final destination.
-2. Use valid internal links only where the destination is real, such as `/stories/` for `VIEW THE STORIES`.
-3. For unresolved review CTAs, either:
-   - render a visually identical non-interactive element with documentation, or
-   - render a placeholder destination only if explicitly accepted for the review phase.
-4. Centralize unresolved destination flags in data files.
-5. Production must not ship unresolved placeholders as if they were final links.
-
-## 11. Accessibility implementation plan
-
-### 11.1 Landmarks and headings
-
-- Add a skip link before the header.
-- Use `<header>`, `<main>`, and `<footer>` landmarks.
-- Use one `<h1>` per page.
-- Preserve heading hierarchy in section headings.
-- Label primary and footer navigation separately.
-
-### 11.2 Navigation
-
-- Logo links to the home page.
-- Current page nav link uses `aria-current="page"`.
-- Header, mobile menu, and footer nav links use readable text.
-- Visual uppercase/letter spacing must be CSS only.
-
-### 11.3 Mobile menu
-
-Implement with small vanilla JavaScript:
-
-- Trigger is a `<button>`, not a link.
-- Use `aria-expanded` and `aria-controls`.
-- Toggle open/closed state with pointer, Enter, and Space.
-- Escape closes the menu.
-- Focus returns to the trigger on close.
-- Focus should remain within the menu/header while the overlay is open unless non-modal behavior is approved.
-- Background content should be inert or otherwise non-operable while open.
-- Body scroll should be locked while the overlay is open, then restored without unexpected page jump.
-- Overlay-click close is optional and must not replace the explicit close button.
-- Menu closes when a menu link activates.
-- Resize cleanup removes overlay/menu state when switching to tablet/desktop.
-
-No-JavaScript fallback:
-
-- Closed mobile header remains usable enough to display logo and page content.
-- Desktop/tablet nav remains available without JavaScript.
-- Mobile menu behavior may be unavailable without JavaScript, but content must not be blocked.
-
-### 11.4 Pricing toggle
-
-- Monthly is the confirmed default.
-- If yearly values are unconfirmed, render Yearly as disabled/unavailable rather than creating fake price changes.
-- If the toggle is active, expose state with `aria-pressed` or `role="switch"` + `aria-checked`.
-- If Yearly is disabled, expose disabled state with native `disabled` or `aria-disabled` depending on the final control pattern.
-- Do not rely only on opacity to communicate active or disabled state.
-- Do not persist billing-period state unless explicitly requested.
-
-### 11.5 Cards and visual CTAs
-
-- If a story card navigates, use a single anchor for the card and avoid nested interactive elements.
-- Story card accessible names must include the story title.
-- If card destinations are unresolved, do not render fake clickable cards.
-- Pricing plan CTAs follow the unresolved-destination policy.
-
-### 11.6 Images and icons
-
-- Content-bearing story images need descriptive alt text.
-- Decorative hero/background images should use empty alt or CSS background treatment.
-- Social links need platform-specific accessible labels.
-- Checkmarks in pricing comparison need accessible `Included` text.
-- Missing features need accessible `Not included` text.
-
-### 11.7 Focus, contrast, and motion
-
-- Add visible focus styles that work on black, white, and photographic backgrounds.
-- Verify white text over image overlays meets WCAG AA where possible.
-- Verify opacity-based body text contrast after final image crops and overlays are implemented.
-- Respect `prefers-reduced-motion` for any menu/card transitions.
-
-## 12. Testing checklist
-
-### 12.1 Build and project checks
-
-Use the package manager confirmed in Step 0.
-
-Required checks:
-
-- install completes cleanly
-- dev server starts
-- production build completes
-- preview server serves the built site
-- Astro/TypeScript checks pass if configured
-- no unused data imports or broken asset paths remain
-
-### 12.2 Route checks
-
-Verify all routes load:
-
-- `/`
-- `/stories/`
-- `/features/`
-- `/pricing/`
-
-Verify navigation links between all real pages.
-
-### 12.3 Responsive visual checks
-
-For each page, review at:
-
-- 375px
-- 768px
-- 1440px
-
-Also check:
-
-- 320px or 360px
-- 1024px
-- 1280px
-- wider than 1440px
-
-Confirm:
-
-- no horizontal scrolling
-- no text overlap
-- no collapsed images
-- expected grid counts by breakpoint
-- correct hero and card ordering
-- correct CTA banner visibility by page
-- correct Home feature preview tablet behavior
-- correct mobile pricing comparison structure
-- image crops are close enough to Figma for review
-
-### 12.4 Accessibility checks
-
-Keyboard-only:
-
-- skip link works
-- header links work
-- mobile menu opens/closes
-- Escape closes mobile menu
-- focus returns correctly
-- focus is visible everywhere
-- pricing billing control is reachable and clearly announced as monthly/default or unavailable yearly
-
-Screen reader / semantic checks:
-
-- each page has one primary heading
-- nav landmarks are labeled
-- `aria-current` appears on the active page link
-- story card links or previews are named correctly
-- pricing comparison communicates included/not-included states
-- social links have platform labels
-- disabled/unresolved CTAs are not announced as fake working links
-
-Automated checks:
-
-- run Lighthouse accessibility checks
-- run browser accessibility inspector or axe if available
-- verify color contrast for opacity text over black/image backgrounds
-
-### 12.5 Content checks
-
-- Home has correct section order.
-- Stories page has 16 stories in order.
-- Home has 4 story previews in order.
-- Features page has all 6 features.
-- Pricing page has all 3 plans and 8 comparison rows.
-- Known Figma copy issues remain documented if preserved.
-- Placeholder destinations are documented and not accidentally treated as final.
-- Home story cards hide dates; Stories page cards show dates.
-- Beta invite CTA appears only on Features and Pricing.
-
-### 12.6 No-JavaScript and failure checks
-
-- Site content is readable if JavaScript fails.
-- Mobile menu failure does not hide the page content.
-- Pricing still shows monthly prices if pricing JavaScript is absent or disabled.
-- Images have stable dimensions or fallback behavior to avoid severe layout collapse.
-- Font fallback does not make the layout unusable.
-
-## 13. Key implementation risks and mitigations
-
-### Risk 1 — Repository scaffold uncertainty
-
-The repo README exists, but expected Astro scaffold files were not found during inspection.
+If using the dev server, follow `frontend/AGENTS.md` and use background mode:
+
+```sh
+astro dev --background
+```
+
+Manual visual checks:
+
+- Home at 375px, 768px, 1440px.
+- Stories at 375px, 768px, 1440px.
+- Features at 375px, 768px, 1440px.
+- Pricing at 375px, 768px, 1440px.
+- Intermediate widths between 375px and 768px.
+- Intermediate widths between 768px and 1440px.
+- Header and footer on every page.
+- Image crops for all hero, story, and CTA images.
+- Gradient accent placement.
+- Story card overlay readability.
+- Pricing card alignment and Pro highlighted state.
+- Pricing comparison desktop and mobile semantics.
+
+Manual accessibility checks:
+
+- Keyboard navigation through header, menu, page links, story cards, pricing controls, and footer.
+- Visible focus states everywhere.
+- Mobile menu open/close with keyboard and Escape.
+- Screen reader-friendly names for icon-only or visual controls.
+- `aria-current` on active navigation item.
+- Text contrast, especially white text over images.
+- No keyboard trap in mobile menu or pricing controls.
+- No fake `#` links that jump unexpectedly.
+
+Content checks:
+
+- Starter content matches the intended copy.
+- Known Figma/starter typos are either preserved intentionally or corrected after explicit approval.
+- Yearly prices match starter content if yearly behavior is enabled.
+- Social links and CTA destinations are documented if still unresolved.
+
+## 14. Risks and mitigations
+
+### Risk: repo structure drift
+
+The actual app is in `frontend/`, while earlier planning referenced root `src/` paths.
 
 Mitigation:
 
-- Start with local repo verification.
-- Scaffold Astro only if files are absent.
-- Do not assume existing scripts or conventions until local inspection is complete.
+- Use `frontend/` paths for all implementation work.
+- Keep root docs at root unless intentionally reorganized.
 
-### Risk 2 — Figma asset expiry
+### Risk: over-abstraction
 
-Figma-generated asset URLs expire and must not become site dependencies.
-
-Mitigation:
-
-- Export assets into `public/assets` before page implementation.
-- Give assets stable semantic names.
-- Track image usage, roles, and crops in data or `ASSETS.md`.
-
-### Risk 3 — Image crop fidelity
-
-Many Figma images are manually cropped and offset.
+Too many generic components could slow implementation and complicate WordPress migration.
 
 Mitigation:
 
-- Record focal points by breakpoint.
-- Use breakpoint-specific image files or object-position values when needed.
-- Tune image crops page-by-page before moving to final polish.
+- Use the complexity-control policy.
+- Create components only for repeated patterns, required behavior, or clear WordPress mapping.
 
-### Risk 4 — Mobile menu accessibility complexity
+### Risk: image crop fidelity
 
-The Figma overlay implies modal-like behavior, but static Figma does not define focus management.
-
-Mitigation:
-
-- Implement accessible menu behavior early.
-- Keep the JavaScript small and isolated.
-- Test keyboard, Escape, focus return, inert/background behavior, scroll lock, and resize cleanup before page polish.
-
-### Risk 5 — Undefined destinations
-
-Several visible CTAs lack final URLs/actions.
+The design relies heavily on precise image cropping.
 
 Mitigation:
 
-- Centralize all destinations in data files.
-- Mark unresolved destinations explicitly.
+- Export/copy assets early.
+- Tune `object-position` per breakpoint.
+- QA crops at 375px, 768px, and 1440px.
+
+### Risk: unresolved destinations
+
+Some CTAs, plan buttons, story links, and social links do not have confirmed final URLs.
+
+Mitigation:
+
+- Use real routes where known.
+- Document unresolved destinations.
 - Avoid fake production links.
-- Use review placeholders only when documented and accepted.
 
-### Risk 6 — Pricing yearly state is incomplete
+### Risk: pricing toggle behavior
 
-Monthly prices are confirmed; yearly prices are not.
-
-Mitigation:
-
-- Build monthly state first.
-- Structure the data model to support yearly values later.
-- Keep Yearly disabled/unavailable or prototype-only until values are approved.
-
-### Risk 7 — Component active-state ambiguity
-
-Figma contains `Active` variants, but their meaning is unclear.
+The starter content provides yearly values, but the inspected Figma state is primarily monthly.
 
 Mitigation:
 
-- Treat active variants as hover/focus visual references only after visual inspection.
-- Do not infer current-page styles from `Active` unless confirmed.
-- Always provide accessible focus styles.
+- Implement monthly first.
+- Add yearly data.
+- Enable live toggle only after behavior and fallback are confirmed.
 
-### Risk 8 — Copy typo fidelity vs polish
+### Risk: mobile menu accessibility
 
-Figma includes likely copy issues.
-
-Mitigation:
-
-- Preserve source copy for the first fidelity pass unless client approves corrections.
-- Keep copy corrections as a separate review decision.
-
-### Risk 9 — Responsive interpolation
-
-Only 375px, 768px, and 1440px frames are explicitly defined.
+The menu has overlay-like behavior and can create focus/scroll issues.
 
 Mitigation:
 
-- Prioritize exact target fidelity.
-- Use fluid widths between targets where safe.
-- Test intermediate widths and document compromises.
+- Isolate behavior in `MobileMenu.astro` and a small script if needed.
+- Test keyboard, Escape, focus return, and resizing.
 
-### Risk 10 — Fixed-pixel layout drift
+### Risk: mobile pricing comparison duplication
 
-The design includes many exact pixel sizes, but using too many fixed widths can break intermediate and narrow viewports.
-
-Mitigation:
-
-- Use exact values at target breakpoints.
-- Use flexible containers outside target breakpoints.
-- Test 320px, 1024px, 1280px, and wide desktop.
-
-### Risk 11 — Over-abstraction
-
-Creating too many generic primitives before implementation can make the site harder to finish and maintain.
+A semantic table and a mobile-friendly layout can drift if duplicated manually.
 
 Mitigation:
 
-- Start with lean components.
-- Extract only after duplication appears.
-- Keep section components close to the actual design patterns.
+- Drive both views from the same comparison data.
+- Prefer one semantic source with responsive CSS where possible.
 
-### Risk 12 — CSS specificity and variant sprawl
+### Risk: copy fidelity vs polish
 
-Many section variants can produce fragile CSS if selectors become too broad or too nested.
-
-Mitigation:
-
-- Use explicit variant classes.
-- Keep component styles close to components.
-- Keep tokens global but layout rules local.
-
-### Risk 13 — Mobile comparison duplication
-
-Desktop/tablet comparison and mobile stacked comparison may duplicate content or get out of sync.
+Design/starter copy includes typos such as `photograpers`, `notifed`, `everytime`, and `Create a your stories`.
 
 Mitigation:
 
-- Render both views from the same `pricingComparisonRows` data.
-- Do not hardcode mobile availability separately.
+- Do not silently rewrite copy during implementation.
+- Document copy issues and confirm whether to preserve or correct them for client review.
 
-### Risk 14 — No-JavaScript behavior
+## 15. Implementation sequence
 
-The site is mostly static, but mobile navigation and any future pricing toggle behavior need JavaScript. If JavaScript fails, content must remain usable.
+### Step 1 — Verify local tree and docs
 
-Mitigation:
+- Confirm the local repo matches the GitHub structure.
+- Confirm docs remain at root.
+- Confirm all work happens under `frontend/` for the Astro app.
 
-- Keep core content rendered in HTML.
-- Make monthly pricing visible by default without JavaScript.
-- Ensure JavaScript failure does not leave overlays visible or content blocked.
-- Do not hide critical navigation on desktop/tablet behind JavaScript-only behavior.
+### Step 2 — Organize assets
 
-### Risk 15 — WordPress migration drift
+- Inspect `docs/starter-content/` assets.
+- Copy needed assets into `frontend/public/assets/`.
+- Rename assets clearly.
+- Record focal point/crop notes while mapping assets to sections.
 
-A too-Astro-specific implementation could be harder to convert later.
+### Step 3 — Add global CSS foundation
 
-Mitigation:
+- Add reset, tokens, base styles, and minimal utilities.
+- Add font setup for DM Sans or approved fallback strategy.
+- Define typography, color, spacing, gradient, and layout tokens.
 
-- Keep components aligned with future WordPress template parts, patterns, and blocks.
-- Avoid coupling content directly to layout internals.
-- Keep repeated content structured in data files.
+### Step 4 — Build the layout shell
 
-## 14. Implementation sequence
+- Create `BaseLayout.astro`.
+- Add header/footer placeholders.
+- Add skip link and main landmark.
+- Replace the starter `index.astro` shell with the new layout pattern.
 
-### Step 0 — Local repo verification
+### Step 5 — Build navigation components
 
-Tasks:
+- Implement header and footer from shared navigation data.
+- Implement mobile menu behavior.
+- Add active/current page state.
+- Validate keyboard navigation before moving deeper into page sections.
 
-- Inspect the actual local repository tree.
-- Confirm whether Astro is already scaffolded.
-- Confirm whether documentation belongs at root or under `/docs`.
-- Confirm package manager and Node version.
-- Confirm whether a lockfile already exists.
+### Step 6 — Build shared content components
 
-Exit criteria:
+- `ButtonLink.astro`
+- `SplitSection.astro`
+- `StoryCard.astro`
+- `FeatureCard.astro`
+- `BetaInvite.astro`
 
-- Current project structure is known.
-- Implementation can proceed without overwriting existing work.
-- Package-manager commands are known.
+### Step 7 — Add data files
 
-### Step 1 — Documentation placement and minimal Astro scaffold
+- Add navigation, site, stories, features, and pricing data.
+- Pull starter copy from `docs/starter-content/`.
+- Mark unresolved URLs and copy issues.
 
-Tasks:
+### Step 8 — Implement Home
 
-- Add or place `DESIGN.md`, `SPEC.md`, and `PLAN.md` in the agreed location.
-- Create minimal Astro project files only if absent.
-- Create four placeholder routes.
-- Add basic build/dev scripts.
+- Replace starter Home content with the full Home page structure.
+- Tune desktop, tablet, and mobile layouts.
+- Validate story previews and feature preview layout.
 
-Exit criteria:
+### Step 9 — Implement Stories
 
-- Dev server runs.
-- Four empty routes exist.
-- Documentation lives in the agreed location.
+- Add featured story hero.
+- Add data-driven story grid.
+- Tune card crops and responsive grid behavior.
 
-### Step 2 — Global CSS foundation
+### Step 10 — Implement Features
 
-Tasks:
+- Add page hero.
+- Add six-feature grid.
+- Add beta invite CTA.
+- Validate tablet two-column and mobile one-column behavior.
 
-- Add reset CSS.
-- Add design tokens.
-- Add global body/page defaults.
-- Add base typography preset classes or variables.
-- Add skip-link styling.
+### Step 11 — Implement Pricing
 
-Exit criteria:
+- Add page hero.
+- Add monthly pricing cards.
+- Add yearly data but gate live switching if behavior is still unresolved.
+- Add comparison data and responsive comparison layout.
+- Add beta invite CTA.
 
-- Global typography, colors, spacing, and base layout tokens are available.
-- No page-level visual build has started yet.
+### Step 12 — Full responsive and accessibility QA
 
-### Step 3 — Asset export and asset notes
+- Test target widths and intermediate widths.
+- Test keyboard and focus behavior.
+- Test mobile menu behavior.
+- Check build output.
+- Compare against Figma frames and update notes if any intentional deviations exist.
 
-Tasks:
+## 16. Assumptions
 
-- Export logo, arrows, menu icons, feature icons, social icons, checkmark, and page images.
-- Store assets in `public/assets` with semantic names.
-- Record image roles, alt-text needs, and crop/focal notes.
-- Confirm no temporary Figma URLs are used in source files.
+- The Astro app remains in `frontend/`.
+- Documentation remains at the repo root.
+- `pnpm` is the package manager for the Astro app.
+- Starter content and assets in `docs/starter-content/` are approved reference material unless they conflict with Figma or client direction.
+- Monthly pricing is the first visual state to implement.
+- Yearly prices from starter content are valid enough to store in data, but live toggle behavior still needs confirmation before being treated as final.
+- The mobile menu should behave as an accessible overlay/dropdown state.
+- WordPress implementation is out of scope for this phase.
 
-Exit criteria:
+## 17. Open questions
 
-- Required visual assets exist locally.
-- Asset usage and crop notes are documented enough to start components.
-
-### Step 4 — Data layer
-
-Tasks:
-
-- Add shared TypeScript content types.
-- Add navigation and global site data.
-- Add stories, features, and pricing data.
-- Add unresolved-destination flags.
-- Add pricing comparison rows with explicit `true`/`false` included states.
-
-Exit criteria:
-
-- Repeated content can render from data files.
-- Known unresolved links and missing yearly prices are centralized.
-
-### Step 5 — Site shell, header, footer, and mobile menu
-
-Tasks:
-
-- Build `BaseLayout`.
-- Build header desktop/tablet layout.
-- Build mobile header and menu panel.
-- Add small mobile menu script.
-- Build footer responsive layout.
-
-Exit criteria:
-
-- Header/footer appear on all pages.
-- Navigation routes work.
-- Mobile menu is keyboard-accessible and closes predictably.
-
-### Step 6 — Shared visual primitives and sections
-
-Tasks:
-
-- Build `ButtonLink`.
-- Build `SplitSection`.
-- Build `BetaInvite`.
-- Add image crop hooks through props/data.
-
-Exit criteria:
-
-- Core hero/content/CTA patterns can be assembled without duplicating layout logic.
-
-### Step 7 — Home page
-
-Tasks:
-
-- Implement Home hero.
-- Implement two secondary split sections.
-- Implement four story previews.
-- Implement three feature previews.
-- Validate at 375, 768, and 1440 before moving on.
-
-Exit criteria:
-
-- Home page matches required section order, responsive behavior, and major visual structure.
-- Home feature preview tablet layout is confirmed as single-column.
-
-### Step 8 — Stories page
-
-Tasks:
-
-- Implement featured story hero.
-- Implement 16-card story grid/list.
-- Validate no-gutter layout and card sizes.
-- Validate date visibility on Stories cards.
-
-Exit criteria:
-
-- Stories page content and responsive grids match the spec.
-
-### Step 9 — Features page
-
-Tasks:
-
-- Implement Features hero.
-- Implement six-feature grid/list.
-- Add beta invite section.
-- Validate 3-column, 2-column, and 1-column behavior.
-
-Exit criteria:
-
-- Features page matches required section order and responsive behavior.
-
-### Step 10 — Pricing page
-
-Tasks:
-
-- Implement Pricing hero.
-- Implement monthly pricing cards.
-- Render billing control with Monthly active.
-- If yearly values are still unconfirmed, make Yearly disabled/unavailable or explicitly prototype-only.
-- Implement pricing comparison desktop/tablet table or table-like semantic structure.
-- Implement mobile stacked comparison from the same data.
-- Add beta invite section.
-
-Exit criteria:
-
-- Pricing page is complete in monthly state.
-- Yearly behavior does not invent prices.
-- Pricing comparison is accessible at desktop/tablet/mobile.
-
-### Step 11 — Interaction and state polish
-
-Tasks:
-
-- Apply hover/focus states.
-- Finalize mobile menu behavior.
-- Finalize unresolved CTA behavior.
-- Confirm reduced-motion handling.
-- Tune focus states over photographic backgrounds.
-
-Exit criteria:
-
-- Interactive elements are clear, keyboard-operable, and accessible.
-- Unresolved visual CTAs do not behave like fake final links.
-
-### Step 12 — Cross-page responsive QA
-
-Tasks:
-
-- Compare all pages against Figma target widths.
-- Tune image object positions.
-- Fix overflow and alignment issues.
-- Check intermediate widths.
-- Check edge cases from `SPEC.md`.
-
-Exit criteria:
-
-- No supported viewport has unintended horizontal scroll.
-- Main responsive transformations match `DESIGN.md` and `SPEC.md`.
-
-### Step 13 — Accessibility QA
-
-Tasks:
-
-- Perform keyboard pass.
-- Perform semantic/landmark pass.
-- Verify menu state announcements and focus management.
-- Verify billing control state/disabled behavior.
-- Verify image alt/decorative handling.
-- Verify pricing comparison accessible labels.
-
-Exit criteria:
-
-- The site meets the accessibility requirements defined in `SPEC.md`.
-
-### Step 14 — Final review preparation
-
-Tasks:
-
-- Update README only if setup commands, live URL, or project status changed.
-- Document unresolved open questions for the client.
-- Capture screenshots for 375, 768, and 1440 review.
-- Prepare for client design review.
-
-Exit criteria:
-
-- Astro review site is ready to share.
-- Remaining decisions are clearly documented.
-
-## 15. Assumptions
-
-**Assumption 1:** The first implementation phase is the Astro review site, not the WordPress final site.
-
-**Assumption 2:** Plain CSS with custom properties is preferred over Tailwind or a component library.
-
-**Assumption 3:** The repository needs Astro scaffolding unless the local checkout reveals existing files not visible during remote inspection.
-
-**Assumption 4:** `DESIGN.md`, `SPEC.md`, and `PLAN.md` should live at the repository root unless the user chooses a `/docs` folder.
-
-**Assumption 5:** Mobile-first CSS is acceptable as long as the 768px and 1440px target frames remain faithful.
-
-**Assumption 6:** Desktop layout starts around 1200px to protect the 1110px content grid.
-
-**Assumption 7:** Figma source copy should be preserved for the first fidelity pass unless the client approves copy corrections.
-
-**Assumption 8:** Unresolved destinations may use documented review placeholders only during the Astro review phase.
-
-**Assumption 9:** The yearly pricing toggle should not become a live production interaction until yearly values are confirmed.
-
-**Assumption 10:** The mobile menu should be treated as modal-like because the inspected Figma state includes a page overlay.
-
-**Assumption 11:** Generic abstractions should be added only when repeated implementation proves they are needed.
-
-## 16. Open questions
-
-1. Should `DESIGN.md`, `SPEC.md`, and `PLAN.md` be committed at the repository root or inside `/docs`?
-2. What exact URL/action should `GET AN INVITE` use?
-3. Should `PICK PLAN` navigate anywhere in the Astro review site?
-4. Should story cards navigate to story detail pages, anchors, or remain visual previews?
-5. Are placeholder links acceptable during review, or should unresolved CTAs render as non-interactive visual elements?
-6. What are the exact yearly prices and period labels?
-7. Should the yearly toggle be disabled until pricing is confirmed?
-8. Should Figma copy typos be preserved or corrected before client review?
-9. What are the real social media URLs?
-10. At what exact viewport width should mobile navigation switch to tablet/desktop navigation?
-11. Are Figma `Active` variants hover states, pressed states, current-page states, or a mixture?
-12. Should image alt text be supplied by the client or drafted during implementation?
-13. Should the mobile pricing comparison include a `COMPARE` heading or follow the inspected mobile frame that begins with `THE FEATURES`?
-14. Should the header remain static, as shown in Figma, or become sticky?
-15. Should the selected pricing period persist across reloads or page navigation if yearly pricing is later confirmed?
-
-## 17. Readiness for Astro planning
-
-The plan is ready for the next Astro-specific component planning pass after two lightweight confirmations:
-
-1. Confirm the local repository structure and package manager.
-2. Confirm where documentation should live: repository root or `/docs`.
-
-The following questions do not block starting the Astro scaffold and monthly-state implementation, but they do block production-ready behavior:
-
-- final CTA destinations
-- yearly pricing values
-- real social links
-- final story-card navigation behavior
-- copy typo corrections
-
+- Should known copy typos be preserved for design fidelity or corrected before client review?
+- What is the final destination or action for `GET AN INVITE`?
+- Should story cards navigate to future story-detail pages, or are they visual previews only for this phase?
+- What should `PICK PLAN` do in the review site?
+- What are the real social media URLs?
+- What is the exact breakpoint for switching from mobile header to tablet/desktop header?
+- Should the pricing yearly toggle be interactive in the Astro review site, or should yearly data remain non-interactive until approved?
+- Should image crop notes live in `DESIGN.md`, data files, or a separate asset manifest?
+
+## 18. Ready status
+
+The plan is ready for Astro implementation planning and then incremental implementation.
+
+The next safe step is to start with the `frontend/` foundation: global styles, layout shell, shared data files, and header/footer components before building page-specific sections.
