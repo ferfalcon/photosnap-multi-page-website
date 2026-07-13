@@ -1,0 +1,70 @@
+---
+import '@fontsource-variable/dm-sans/wght.css';
+import '../styles/reset.css';
+import '../styles/tokens.css';
+import '../styles/base.css';
+import '../styles/utilities.css';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+
+interface Props {
+	title: string;
+	description: string;
+}
+
+const { title, description } = Astro.props;
+---
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="generator" content={Astro.generator} />
+		<meta name="description" content={description} />
+		<link
+			rel="icon"
+			type="image/png"
+			sizes="32x32"
+			href="/assets/favicons/favicon-32x32.png"
+		/>
+		<title>{title}</title>
+	</head>
+	<body>
+		<a class="skip-link visually-hidden" href="#main-content">Skip to main content</a>
+		<Header />
+		<main id="main-content" class="site-main" tabindex="-1">
+			<slot />
+		</main>
+		<Footer />
+	</body>
+</html>
+
+<style>
+	body {
+		display: grid;
+		grid-template-rows: auto minmax(0, 1fr) auto;
+	}
+
+	.site-main {
+		min-inline-size: 0;
+	}
+
+	.skip-link:where(:focus, :active) {
+		position: fixed;
+		z-index: 1000;
+		inset-block-start: var(--space-200);
+		inset-inline-start: var(--space-200);
+		inline-size: auto;
+		block-size: auto;
+		margin: 0;
+		padding: var(--space-150) var(--space-300);
+		clip-path: none;
+		background: var(--color-surface-inverse);
+		color: var(--color-text-inverse);
+		font-size: var(--text-preset-7-size);
+		font-weight: var(--font-weight-bold);
+		line-height: var(--text-preset-7-line-height);
+		letter-spacing: var(--text-preset-7-letter-spacing);
+		text-transform: uppercase;
+	}
+</style>
