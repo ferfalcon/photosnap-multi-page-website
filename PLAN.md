@@ -705,15 +705,18 @@ Mitigation:
 - Tune and validate the three-column desktop, two-column tablet, and single-column mobile layouts.
 - Preserve the currently stored source spellings until the documented copy review is resolved.
 
-**Next implementation step:** Step 11 — Implement Pricing.
-
 ### Step 11 — Implement Pricing
 
-- Add page hero.
-- Add monthly pricing cards.
-- Reuse the stored yearly data but gate live switching if behavior is still unresolved.
-- Add comparison data and responsive comparison layout.
-- Add beta invite CTA.
+**Status:** Completed — 2026-07-13
+
+- Add the responsive, art-directed page hero with its visible page heading, gradient accent, and LCP image priority.
+- Add three responsive pricing cards with the defined featured Pro treatment.
+- Add an accessible, non-persistent billing switch that defaults to Monthly, uses the stored yearly prices, and preserves a monthly no-JavaScript fallback.
+- Add a semantic comparison table that becomes a stacked mobile comparison while preserving included and not-included relationships.
+- Reuse the beta invite CTA with its approved interim `/pricing` destination.
+- Keep `PICK PLAN` as a static visual label with no fake destination or focus stop until a real purchase flow is approved; this is an intentional review-site interaction limitation.
+
+**Next implementation step:** Step 12 — Full responsive and accessibility QA.
 
 ### Step 12 — Full responsive and accessibility QA
 
@@ -726,8 +729,9 @@ Mitigation:
 ## 16. Assumptions
 - Starter content and assets in `docs/starter-content/` are approved reference material unless they conflict with Figma or client direction.
 - The initial review site uses the supplied progressive JPEG, SVG, and PNG assets; modern-format derivatives are deferred until a measured performance pass.
-- Monthly pricing is the first visual state to implement.
-- Yearly prices from starter content are valid enough to store in data, but live toggle behavior still needs confirmation before being treated as final.
+- Monthly pricing is the default state; the Yearly switch updates to the approved starter values without persisting the choice.
+- When JavaScript is unavailable, the pricing page keeps the switch disabled and presents the monthly prices clearly.
+- Pricing `PICK PLAN` treatments remain static until a real checkout or contact destination is supplied.
 - The header switches between mobile and tablet/desktop navigation at `48rem`.
 - The mobile menu uses a native popover enhanced as an accessible overlay state.
 - `/pricing` is the approved interim review-site destination for `GET AN INVITE`.
@@ -737,11 +741,9 @@ Mitigation:
 ## 17. Open questions
 
 - Should known copy typos be preserved for design fidelity or corrected before client review?
-- What should `PICK PLAN` do in the review site?
-- Should the pricing yearly toggle be interactive in the Astro review site, or should yearly data remain non-interactive until approved?
 
 ## 18. Ready status
 
-Steps 1 through 10 are complete. The verified public asset namespace and responsive mapping are documented in `docs/asset-map.md`. The Astro app now has its global CSS foundation, reusable document shell, shared navigation data, four routes, responsive navigation components, reusable shared content components and grids, typed Stories, Features, and Pricing content, and complete responsive Home, Stories, and Features pages.
+Steps 1 through 11 are complete. The verified public asset namespace and responsive mapping are documented in `docs/asset-map.md`. The Astro app now has its global CSS foundation, reusable document shell, shared navigation data, four complete routes, responsive navigation components, reusable shared content components and grids, typed content, an accessible pricing interaction and comparison, and complete responsive Home, Stories, Features, and Pricing pages.
 
-The next safe step is Step 11: implement the Pricing page using the shared hero and beta-invite components with the prepared pricing data.
+The next safe step is Step 12: run full responsive, interaction, accessibility, and cross-page visual QA.
