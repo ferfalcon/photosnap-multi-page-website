@@ -5,6 +5,16 @@ export const inviteCta = {
 	href: '/pricing',
 } as const satisfies LinkItem;
 
+export const betaInvite = {
+	heading: 'We’re in beta. Get your invite today!',
+	headingLines: ['We’re in beta.', 'Get your invite', 'today!'],
+	cta: inviteCta,
+} as const satisfies {
+	heading: string;
+	headingLines: readonly string[];
+	cta: LinkItem;
+};
+
 export const socialPlatforms = [
 	{
 		label: 'Facebook',

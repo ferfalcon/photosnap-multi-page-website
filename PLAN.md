@@ -653,19 +653,22 @@ Mitigation:
 - Add active/current page state.
 - Validate keyboard navigation before moving deeper into page sections.
 
-**Next implementation step:** Step 6 — Build shared content components.
-
 ### Step 6 — Build shared content components
 
-- Reuse the `ButtonLink.astro` delivered early in Step 5.
-- `SplitSection.astro`
-- `StoryCard.astro`
-- `FeatureCard.astro`
-- `BetaInvite.astro`
+**Status:** Completed — 2026-07-13
+
+- Reuse and extend the `ButtonLink.astro` delivered early in Step 5.
+- Add shared responsive image contracts to `types.ts`.
+- Add `SplitSection.astro` with art-directed image crops and explicit loading priority.
+- Add linked and static `StoryCard.astro` states.
+- Add `FeatureCard.astro` with decorative feature-icon handling.
+- Add the data-driven `BetaInvite.astro` shared CTA.
+
+**Next implementation step:** Step 7 — Add remaining data files.
 
 ### Step 7 — Add remaining data files
 
-- Reuse the shared types, navigation, and site data delivered early in Step 5.
+- Reuse the shared types, navigation, and site data delivered in Steps 5 and 6.
 - Add stories, features, and pricing data.
 - Pull starter copy from `docs/starter-content/`.
 - Mark unresolved URLs and copy issues.
@@ -729,6 +732,6 @@ Mitigation:
 
 ## 18. Ready status
 
-Steps 1 through 5 are complete. The verified public asset namespace and responsive mapping are documented in `docs/asset-map.md`. The Astro app now has its global CSS foundation, reusable document shell, shared navigation data, four route shells, and responsive header, mobile menu, and footer components.
+Steps 1 through 6 are complete. The verified public asset namespace and responsive mapping are documented in `docs/asset-map.md`. The Astro app now has its global CSS foundation, reusable document shell, shared navigation data, four route shells, responsive navigation components, shared responsive-image contracts, and reusable split-section, story-card, feature-card, and beta-invite components.
 
-The next safe step is Step 6: build the remaining shared content components while reusing the `ButtonLink.astro` delivered in Step 5.
+The next safe step is Step 7: add the remaining stories, features, and pricing data while reusing the shared contracts established in Steps 5 and 6.

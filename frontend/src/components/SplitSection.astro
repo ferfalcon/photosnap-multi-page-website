@@ -1,0 +1,261 @@
+---
+import type {
+	ImageCandidate,
+	LinkItem,
+	ResponsiveImage,
+} from '../data/types';
+import ButtonLink from './ButtonLink.astro';
+
+interface Props {
+	heading: string;
+	body: string;
+	image: ResponsiveImage & { tablet: ImageCandidate };
+	theme: 'dark' | 'light';
+	imagePosition: 'left' | 'right';
+	variant: 'home-hero' | 'home-secondary' | 'page-hero';
+	headingLevel?: 'h1' | 'h2';
+	accent?: boolean;
+	cta?: LinkItem;
+	isLcp?: boolean;
+}
+
+const {
+	heading,
+	body,
+	image,
+	theme,
+	imagePosition,
+	variant,
+	headingLevel = 'h2',
+	accent = false,
+	cta,
+	isLcp = false,
+} = Astro.props;
+
+const Heading = headingLevel;
+---
+
+<section
+	class:list={[
+		'split-section',
+		`split-section--${theme}`,
+		`split-section--image-${imagePosition}`,
+		`split-section--${variant}`,
+		{ 'split-section--accent': accent },
+	]}
+>
+	<div class="split-section__content">
+		<div class="split-section__content-inner">
+			<div class="split-section__copy">
+				<Heading class="split-section__heading">{heading}</Heading>
+				<p class="split-section__body">{body}</p>
+			</div>
+			{
+				cta && (
+					<ButtonLink
+						href={cta.href}
+						label={cta.label}
+						variant="arrow"
+						color={theme === 'dark' ? 'white' : 'black'}
+					/>
+				)
+			}
+		</div>
+	</div>
+
+	<picture class="split-section__media">
+		<source
+			media="(min-width: 75rem)"
+			srcset={image.desktop.src}
+			width={image.desktop.width}
+			height={image.desktop.height}
+		/>
+		<source
+			media="(min-width: 48rem)"
+			srcset={image.tablet.src}
+			width={image.tablet.width}
+			height={image.tablet.height}
+		/>
+		<img
+			src={image.mobile.src}
+			alt={image.alt}
+			width={image.mobile.width}
+			height={image.mobile.height}
+			loading={isLcp ? 'eager' : 'lazy'}
+			fetchpriority={isLcp ? 'high' : undefined}
+		/>
+	</picture>
+</section>
+
+<style>
+	.split-section {
+		display: grid;
+		grid-template-areas:
+			'media'
+			'content';
+		inline-size: 100%;
+	}
+
+	.split-section__content {
+		position: relative;
+		grid-area: content;
+		display: grid;
+		place-items: center;
+		min-inline-size: 0;
+	}
+
+	.split-section--dark .split-section__content {
+		background: var(--color-surface-inverse);
+		color: var(--color-text-inverse);
+	}
+
+	.split-section--light .split-section__content {
+		background: var(--color-surface);
+		color: var(--color-text);
+	}
+
+	.split-section__content-inner {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: var(--space-300);
+		inline-size: min(calc(100% - (2 * var(--layout-page-gutter))), 19.875rem);
+	}
+
+	.split-section__copy {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-250);
+		inline-size: 100%;
+	}
+
+	.split-section__heading {
+		font-size: var(--text-preset-2-size);
+		font-weight: var(--font-weight-bold);
+		line-height: var(--text-preset-2-line-height);
+		letter-spacing: var(--text-preset-2-letter-spacing);
+		text-transform: uppercase;
+	}
+
+	.split-section__body {
+		font-size: var(--text-preset-5-size);
+		line-height: var(--text-preset-5-line-height);
+		opacity: 0.6;
+	}
+
+	.split-section__media {
+		grid-area: media;
+		inline-size: 100%;
+		block-size: 100%;
+		overflow: hidden;
+		background: var(--color-surface-muted);
+	}
+
+	.split-section__media img {
+		inline-size: 100%;
+		block-size: 100%;
+		object-fit: cover;
+	}
+
+	.split-section--home-hero .split-section__media,
+	.split-section--page-hero .split-section__media {
+		block-size: 18.375rem;
+	}
+
+	.split-section--home-secondary .split-section__media {
+		block-size: 16.9375rem;
+	}
+
+	.split-section--home-hero .split-section__content,
+	.split-section--home-secondary .split-section__content {
+		min-block-size: 26.1875rem;
+	}
+
+	.split-section--page-hero .split-section__content {
+		min-block-size: 18.75rem;
+	}
+
+	.split-section--accent .split-section__content::before {
+		position: absolute;
+		inset-block-start: 0;
+		inset-inline-start: max(
+			var(--layout-page-gutter),
+			calc((100% - 19.875rem) / 2)
+		);
+		inline-size: 8rem;
+		block-size: 0.375rem;
+		background: var(--gradient-brand);
+		content: '';
+	}
+
+	@media (min-width: 48rem) {
+		.split-section {
+			grid-template-areas: 'content media';
+			grid-template-columns: minmax(0, 495fr) minmax(0, 273fr);
+		}
+
+		.split-section--image-left {
+			grid-template-areas: 'media content';
+			grid-template-columns: minmax(0, 273fr) minmax(0, 495fr);
+		}
+
+		.split-section--home-hero {
+			min-block-size: 40.625rem;
+		}
+
+		.split-section--home-secondary {
+			min-block-size: 37.5rem;
+		}
+
+		.split-section--page-hero {
+			min-block-size: 30.625rem;
+		}
+
+		.split-section__content,
+		.split-section__media,
+		.split-section--home-hero .split-section__media,
+		.split-section--home-secondary .split-section__media,
+		.split-section--page-hero .split-section__media {
+			min-block-size: inherit;
+			block-size: 100%;
+		}
+
+		.split-section__content-inner {
+			gap: var(--space-600);
+			inline-size: min(calc(100% - (2 * var(--space-500))), 24.1875rem);
+		}
+
+		.split-section__heading {
+			font-size: var(--text-preset-1-size);
+			line-height: var(--text-preset-1-line-height);
+			letter-spacing: var(--text-preset-1-letter-spacing);
+		}
+
+		.split-section--accent .split-section__content::before {
+			inset-block-start: 50%;
+			inset-inline-start: 0;
+			inline-size: 0.375rem;
+			block-size: 9rem;
+			transform: translateY(-50%);
+		}
+
+		.split-section--home-hero.split-section--accent
+			.split-section__content::before {
+			block-size: 19rem;
+		}
+	}
+
+	@media (min-width: 75rem) {
+		.split-section {
+			grid-template-columns: minmax(0, 610fr) minmax(0, 830fr);
+		}
+
+		.split-section--image-left {
+			grid-template-columns: minmax(0, 830fr) minmax(0, 610fr);
+		}
+
+		.split-section__content-inner {
+			inline-size: min(calc(100% - (2 * var(--space-600))), 24.1875rem);
+		}
+	}
+</style>

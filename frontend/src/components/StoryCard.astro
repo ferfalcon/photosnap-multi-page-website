@@ -1,0 +1,148 @@
+---
+import type { ResponsiveImage } from '../data/types';
+import ButtonLink from './ButtonLink.astro';
+
+interface Props {
+	title: string;
+	author: string;
+	image: ResponsiveImage;
+	date?: string;
+	showDate?: boolean;
+	href?: string;
+	headingLevel?: 'h2' | 'h3';
+}
+
+const {
+	title,
+	author,
+	image,
+	date,
+	showDate = false,
+	href,
+	headingLevel = 'h2',
+} = Astro.props;
+
+const Heading = headingLevel;
+const tabletImage = image.tablet ?? image.desktop;
+---
+
+<article class="story-card">
+	<picture class="story-card__media">
+		<source
+			media="(min-width: 48rem)"
+			srcset={tabletImage.src}
+			width={tabletImage.width}
+			height={tabletImage.height}
+		/>
+		<img
+			src={image.mobile.src}
+			alt={image.alt}
+			width={image.mobile.width}
+			height={image.mobile.height}
+			loading="lazy"
+		/>
+	</picture>
+	<div class="story-card__scrim" aria-hidden="true"></div>
+	<div class="story-card__content">
+		<div class="story-card__details">
+			<div class="story-card__metadata">
+				{showDate && date && <p class="story-card__date">{date}</p>}
+				<Heading class="story-card__title">{title}</Heading>
+				<p class="story-card__author">by {author}</p>
+			</div>
+			{href && <div class="story-card__divider" aria-hidden="true"></div>}
+		</div>
+		{
+			href && (
+				<ButtonLink
+					href={href}
+					label="READ STORY"
+					ariaLabel={`Read story: ${title}`}
+					variant="arrow"
+					color="white"
+					fullWidth
+				/>
+			)
+		}
+	</div>
+</article>
+
+<style>
+	.story-card {
+		position: relative;
+		inline-size: 100%;
+		aspect-ratio: 1;
+		overflow: hidden;
+		background: var(--color-surface-muted);
+		color: var(--color-text-inverse);
+	}
+
+	.story-card__media,
+	.story-card__media img,
+	.story-card__scrim {
+		position: absolute;
+		inset: 0;
+		inline-size: 100%;
+		block-size: 100%;
+	}
+
+	.story-card__media img {
+		object-fit: cover;
+	}
+
+	.story-card__scrim {
+		background: var(--gradient-story-scrim);
+	}
+
+	.story-card__content {
+		position: absolute;
+		inset-inline: clamp(var(--space-300), 8.8vw, 2.5rem);
+		inset-block-end: var(--space-500);
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-250);
+	}
+
+	.story-card__details {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-200);
+	}
+
+	.story-card__metadata {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-050);
+	}
+
+	.story-card__date,
+	.story-card__author {
+		font-size: var(--text-preset-6-size);
+		line-height: var(--text-preset-6-line-height);
+	}
+
+	.story-card__title {
+		font-size: var(--text-preset-4-size);
+		font-weight: var(--font-weight-bold);
+		line-height: var(--text-preset-4-line-height);
+		letter-spacing: var(--text-preset-4-letter-spacing);
+	}
+
+	.story-card__divider {
+		inline-size: 100%;
+		block-size: 1px;
+		background: var(--color-text-inverse);
+		opacity: 0.25;
+	}
+
+	@media (min-width: 48rem) {
+		.story-card {
+			aspect-ratio: auto;
+			block-size: 31.25rem;
+		}
+
+		.story-card__content {
+			inset-inline: var(--space-500);
+		}
+	}
+</style>
