@@ -695,14 +695,17 @@ Mitigation:
 - Tune and validate the gutterless four-column, two-column, and single-column layouts and supplied crops.
 - Keep the featured story and story cards static, omitting the Figma/SPEC read actions and card dividers until title-specific destinations are approved; this is an intentional review-site deviation.
 
-**Next implementation step:** Step 10 — Implement Features.
-
 ### Step 10 — Implement Features
 
-- Add page hero.
-- Add six-feature grid.
-- Add beta invite CTA.
-- Validate tablet two-column and mobile one-column behavior.
+**Status:** Completed — 2026-07-13
+
+- Add the responsive, art-directed page hero with its visible page heading, gradient accent, and LCP image priority.
+- Add a reusable, semantic six-feature grid in the defined order.
+- Reuse the beta invite CTA with its approved interim `/pricing` destination.
+- Tune and validate the three-column desktop, two-column tablet, and single-column mobile layouts.
+- Preserve the currently stored source spellings until the documented copy review is resolved.
+
+**Next implementation step:** Step 11 — Implement Pricing.
 
 ### Step 11 — Implement Pricing
 
@@ -739,6 +742,6 @@ Mitigation:
 
 ## 18. Ready status
 
-Steps 1 through 9 are complete. The verified public asset namespace and responsive mapping are documented in `docs/asset-map.md`. The Astro app now has its global CSS foundation, reusable document shell, shared navigation data, four routes, responsive navigation components, reusable shared content components, typed Stories, Features, and Pricing content, and complete responsive Home and Stories pages.
+Steps 1 through 10 are complete. The verified public asset namespace and responsive mapping are documented in `docs/asset-map.md`. The Astro app now has its global CSS foundation, reusable document shell, shared navigation data, four routes, responsive navigation components, reusable shared content components and grids, typed Stories, Features, and Pricing content, and complete responsive Home, Stories, and Features pages.
 
-The next safe step is Step 10: implement the Features page using the shared hero, feature-card, and beta-invite components.
+The next safe step is Step 11: implement the Pricing page using the shared hero and beta-invite components with the prepared pricing data.

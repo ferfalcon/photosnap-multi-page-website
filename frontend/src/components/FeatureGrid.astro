@@ -1,0 +1,69 @@
+---
+import type { Feature } from '../data/types';
+import FeatureCard from './FeatureCard.astro';
+
+interface Props {
+	features: readonly Feature[];
+}
+
+const { features } = Astro.props;
+---
+
+<ul class="feature-grid">
+	{
+		features.map((feature) => (
+			<li>
+				<FeatureCard
+					title={feature.title}
+					description={feature.description}
+					icon={feature.icon}
+					headingLevel="h3"
+				/>
+			</li>
+		))
+	}
+</ul>
+
+<style>
+	.feature-grid {
+		display: grid;
+		gap: var(--space-700);
+		inline-size: min(
+			calc(100% - (2 * var(--layout-page-gutter))),
+			19.375rem
+		);
+		margin-inline: auto;
+		padding: 0;
+		list-style: none;
+	}
+
+	.feature-grid > li {
+		min-inline-size: 0;
+	}
+
+	@media (min-width: 48rem) {
+		.feature-grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			column-gap: var(--space-150);
+			row-gap: var(--space-1000);
+			inline-size: min(calc(100% - (2 * 2.375rem)), 43.25rem);
+		}
+
+		.feature-grid > li {
+			display: flex;
+			align-items: flex-end;
+		}
+	}
+
+	@media (min-width: 75rem) {
+		.feature-grid {
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+			column-gap: var(--space-375);
+			row-gap: 6.5rem;
+			inline-size: min(
+				calc(100% - (2 * var(--layout-page-gutter))),
+				var(--layout-content-max)
+			);
+		}
+	}
+</style>
