@@ -634,14 +634,16 @@ Mitigation:
 - Add font setup for DM Sans or approved fallback strategy.
 - Define typography, color, spacing, gradient, and layout tokens.
 
-**Next implementation step:** Step 4 — Build the layout shell.
-
 ### Step 4 — Build the layout shell
+
+**Status:** Completed — 2026-07-13
 
 - Create `BaseLayout.astro`.
 - Add header/footer placeholders.
 - Add skip link and main landmark.
 - Replace the starter `index.astro` shell with the new layout pattern.
+
+**Next implementation step:** Step 5 — Build navigation components.
 
 ### Step 5 — Build navigation components
 
@@ -723,6 +725,6 @@ Mitigation:
 
 ## 18. Ready status
 
-Steps 1 and 2 are complete. The verified public asset namespace and responsive mapping are documented in `docs/asset-map.md`.
+Steps 1 through 4 are complete. The verified public asset namespace and responsive mapping are documented in `docs/asset-map.md`, and the Astro app now has its global CSS foundation and reusable document shell.
 
-The next safe step is Step 3: add the global CSS foundation under `frontend/` before building the layout shell and components.
+The next safe step is Step 5: implement the shared navigation components and mobile menu behavior inside the established layout shell.

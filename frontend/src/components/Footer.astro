@@ -1,0 +1,43 @@
+<footer class="site-footer">
+	<div class="site-footer__inner container">
+		<p>Copyright 2019. All Rights Reserved</p>
+	</div>
+</footer>
+
+<style>
+	.site-footer {
+		display: flex;
+		align-items: center;
+		min-block-size: 33.6875rem;
+		background: var(--color-surface-inverse);
+		color: var(--color-text-inverse-subtle);
+	}
+
+	.site-footer__inner {
+		display: flex;
+		justify-content: center;
+		text-align: center;
+	}
+
+	.site-footer p {
+		font-size: var(--text-preset-5-size);
+		line-height: var(--text-preset-5-line-height);
+	}
+
+	@media (min-width: 48rem) {
+		.site-footer {
+			min-block-size: 17.75rem;
+		}
+
+		.site-footer__inner {
+			justify-content: flex-end;
+			text-align: end;
+		}
+	}
+
+	@media (min-width: 75rem) {
+		.site-footer {
+			min-block-size: 15.625rem;
+		}
+	}
+</style>
